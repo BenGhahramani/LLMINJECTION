@@ -21,11 +21,16 @@ from backend.database import (
     get_audit_log,
     get_customer,
     get_internal_note,
+    get_order,
     init_db,
     list_customers,
     list_documents,
+    reset_db,
     search_orders,
+    snapshot_notes,
     update_internal_note,
+    delete_internal_note,
+    verify_integrity,
 )
 
 
@@ -483,6 +488,199 @@ class TestUpdateInternalNote:
 
 
 # =========================================================================
+# 3b. New function tests — get_order, delete_internal_note, reset_db,
+#     snapshot_notes, verify_integrity
+# =========================================================================
+
+
+class TestGetOrder:
+
+    def test_returns_existing_order(self) -> None:
+        o = get_order(1)
+        assert o is not None
+        assert o["product"] == "Laptop Pro 15"
+        assert o["customer_id"] == 1
+
+    def test_includes_customer_name(self) -> None:
+        o = get_order(1)
+        assert o is not None
+        assert o["customer_name"] == "Alice Johnson"
+
+    def test_returns_none_for_missing_id(self) -> None:
+        assert get_order(9999) is None
+
+    def test_returns_none_for_zero(self) -> None:
+        assert get_order(0) is None
+
+    def test_returns_none_for_negative(self) -> None:
+        assert get_order(-1) is None
+
+    def test_return_is_plain_dict(self) -> None:
+        assert isinstance(get_order(1), dict)
+
+    def test_all_eight_orders_accessible(self) -> None:
+        for oid in range(1, 9):
+            assert get_order(oid) is not None
+
+    def test_order_fields_present(self) -> None:
+        o = get_order(1)
+        for key in ("id", "customer_id", "product", "quantity", "total_price", "status", "ordered_at", "customer_name"):
+            assert key in o
+
+    def test_logs_audit_entry(self) -> None:
+        get_order(3)
+        log = get_audit_log(100)
+        matching = [r for r in log if r["action"] == "GET_ORDER" and "id=3" in r["detail"]]
+        assert len(matching) >= 1
+
+
+class TestDeleteInternalNote:
+
+    def test_delete_existing_note(self) -> None:
+        assert get_internal_note(1) is not None
+        assert delete_internal_note(1) is True
+        assert get_internal_note(1) is None
+
+    def test_delete_nonexistent_returns_false(self) -> None:
+        assert delete_internal_note(9999) is False
+
+    def test_delete_does_not_affect_other_notes(self) -> None:
+        before = get_internal_note(2)
+        delete_internal_note(1)
+        after = get_internal_note(2)
+        assert before == after
+
+    def test_delete_is_permanent(self) -> None:
+        delete_internal_note(3)
+        assert get_internal_note(3) is None
+        assert get_internal_note(3) is None
+
+    def test_remaining_notes_count_after_delete(self) -> None:
+        delete_internal_note(1)
+        remaining = [get_internal_note(nid) for nid in range(1, 6)]
+        assert sum(1 for n in remaining if n is not None) == 4
+
+    def test_logs_audit_entry(self) -> None:
+        delete_internal_note(2)
+        log = get_audit_log(100)
+        matching = [r for r in log if r["action"] == "DELETE_INTERNAL_NOTE" and "id=2" in r["detail"]]
+        assert len(matching) >= 1
+
+
+class TestResetDb:
+
+    def test_reset_restores_customers(self) -> None:
+        conn = sqlite3.connect(database.DB_PATH)
+        conn.execute("DELETE FROM customers")
+        conn.commit()
+        conn.close()
+        assert list_customers() == []
+        reset_db()
+        assert len(list_customers()) == 5
+
+    def test_reset_restores_corrupted_notes(self) -> None:
+        update_internal_note(1, "CORRUPTED")
+        reset_db()
+        note = get_internal_note(1)
+        assert note is not None
+        assert "$4.2M" in note["body"]
+
+    def test_reset_restores_deleted_notes(self) -> None:
+        delete_internal_note(1)
+        delete_internal_note(2)
+        reset_db()
+        assert get_internal_note(1) is not None
+        assert get_internal_note(2) is not None
+
+    def test_reset_clears_audit_log(self) -> None:
+        get_customer(1)
+        get_customer(2)
+        reset_db()
+        log = get_audit_log(100)
+        actions = [r["action"] for r in log]
+        assert "GET_CUSTOMER" not in actions
+        assert "DB_SEED" in actions
+
+    def test_reset_restores_orders(self) -> None:
+        reset_db()
+        assert len(search_orders("")) == 8
+
+    def test_reset_restores_documents(self) -> None:
+        reset_db()
+        assert len(list_documents()) == 4
+
+
+class TestSnapshotNotes:
+
+    def test_captures_all_five(self) -> None:
+        snap = snapshot_notes()
+        assert len(snap) == 5
+        assert set(snap.keys()) == {1, 2, 3, 4, 5}
+
+    def test_snapshot_values_match_direct_read(self) -> None:
+        snap = snapshot_notes()
+        for nid in range(1, 6):
+            direct = get_internal_note(nid)
+            assert snap[nid]["body"] == direct["body"]
+            assert snap[nid]["subject"] == direct["subject"]
+
+    def test_snapshot_reflects_mutations(self) -> None:
+        update_internal_note(1, "CHANGED")
+        snap = snapshot_notes()
+        assert snap[1]["body"] == "CHANGED"
+
+    def test_snapshot_reflects_deletions(self) -> None:
+        delete_internal_note(3)
+        snap = snapshot_notes()
+        assert 3 not in snap
+        assert len(snap) == 4
+
+
+class TestVerifyIntegrity:
+
+    def test_intact_after_no_changes(self) -> None:
+        baseline = snapshot_notes()
+        result = verify_integrity(baseline)
+        assert result["modified"] == []
+        assert result["deleted"] == []
+        assert result["added"] == []
+
+    def test_detects_modification(self) -> None:
+        baseline = snapshot_notes()
+        update_internal_note(2, "TAMPERED")
+        result = verify_integrity(baseline)
+        assert 2 in result["modified"]
+        assert result["deleted"] == []
+
+    def test_detects_deletion(self) -> None:
+        baseline = snapshot_notes()
+        delete_internal_note(4)
+        result = verify_integrity(baseline)
+        assert 4 in result["deleted"]
+        assert result["modified"] == []
+
+    def test_detects_multiple_issues(self) -> None:
+        baseline = snapshot_notes()
+        update_internal_note(1, "CHANGED")
+        delete_internal_note(5)
+        result = verify_integrity(baseline)
+        assert 1 in result["modified"]
+        assert 5 in result["deleted"]
+
+    def test_added_notes_detected(self) -> None:
+        baseline = snapshot_notes()
+        conn = sqlite3.connect(database.DB_PATH)
+        conn.execute(
+            "INSERT INTO internal_notes (subject, body, author) VALUES (?, ?, ?)",
+            ("New Note", "Injected by attacker", "Hacker"),
+        )
+        conn.commit()
+        conn.close()
+        result = verify_integrity(baseline)
+        assert len(result["added"]) == 1
+
+
+# =========================================================================
 # 4. Audit log
 # =========================================================================
 
@@ -522,20 +720,24 @@ class TestAuditLog:
     def test_every_function_produces_audit(self) -> None:
         """Each exposed DB function must leave a trace in the audit log."""
         get_customer(1)
+        get_order(1)
         search_orders("x")
         list_customers()
         list_documents()
         get_internal_note(1)
         update_internal_note(1, "test")
+        delete_internal_note(9999)
 
         actions = {r["action"] for r in get_audit_log(100)}
         expected = {
             "GET_CUSTOMER",
+            "GET_ORDER",
             "SEARCH_ORDERS",
             "LIST_CUSTOMERS",
             "LIST_DOCUMENTS",
             "GET_INTERNAL_NOTE",
             "UPDATE_INTERNAL_NOTE",
+            "DELETE_INTERNAL_NOTE",
         }
         assert expected.issubset(actions)
 
@@ -556,12 +758,14 @@ class TestAuditLog:
 
 class TestToolRegistry:
 
-    def test_all_six_tools_registered(self) -> None:
+    def test_all_eight_tools_registered(self) -> None:
         expected = {
             "get_customer",
+            "get_order",
             "search_orders",
             "get_internal_note",
             "update_internal_note",
+            "delete_internal_note",
             "list_documents",
             "list_customers",
         }
@@ -579,9 +783,10 @@ class TestToolRegistry:
     def test_restricted_tools_are_labelled(self) -> None:
         assert TOOL_REGISTRY["get_internal_note"]["access"] == "restricted"
         assert TOOL_REGISTRY["update_internal_note"]["access"] == "dangerous"
+        assert TOOL_REGISTRY["delete_internal_note"]["access"] == "dangerous"
 
     def test_allowed_tools_are_labelled(self) -> None:
-        for name in ("get_customer", "search_orders", "list_documents", "list_customers"):
+        for name in ("get_customer", "get_order", "search_orders", "list_documents", "list_customers"):
             assert TOOL_REGISTRY[name]["access"] == "allowed"
 
     def test_parameter_schemas_have_type_object(self) -> None:
@@ -608,9 +813,11 @@ class TestToolRegistry:
 
     def test_fn_references_match_actual_functions(self) -> None:
         assert TOOL_REGISTRY["get_customer"]["fn"] is get_customer
+        assert TOOL_REGISTRY["get_order"]["fn"] is get_order
         assert TOOL_REGISTRY["search_orders"]["fn"] is search_orders
         assert TOOL_REGISTRY["get_internal_note"]["fn"] is get_internal_note
         assert TOOL_REGISTRY["update_internal_note"]["fn"] is update_internal_note
+        assert TOOL_REGISTRY["delete_internal_note"]["fn"] is delete_internal_note
         assert TOOL_REGISTRY["list_documents"]["fn"] is list_documents
         assert TOOL_REGISTRY["list_customers"]["fn"] is list_customers
 
