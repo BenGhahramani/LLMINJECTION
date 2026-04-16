@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LLM Injection Test Bench</title>
+
+<!-- ================================================================== -->
+<!-- Styles                                                             -->
+<!-- ================================================================== -->
+<style>
+  /* ---- Design tokens ------------------------------------------------- */
+  :root {
+    --bg:           #0f1117;
+    --surface:      #1a1d27;
+    --border:       #2a2d3a;
+    --text:         #e4e4e7;
+    --muted:        #71717a;
+    --accent:       #6366f1;
+    --accent-hover: #818cf8;
+    --danger:       #ef4444;
+    --success:      #22c55e;
+    --warning:      #f59e0b;
+  }
+
+  /* ---- Reset --------------------------------------------------------- */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---- Header -------------------------------------------------------- */
+  header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  header h1 { font-size: 18px; font-weight: 600; }
+
+  header .badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: var(--danger);
+    color: #fff;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ---- Layout -------------------------------------------------------- */
+  .container {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* ---- Chat panel ---------------------------------------------------- */
+  .chat-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .msg {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    line-height: 1.5;
+    font-size: 14px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .msg.user {
+    align-self: flex-end;
+    background: var(--accent);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+
+  .msg.assistant {
+    align-self: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg.system {
+    align-self: center;
+    color: var(--muted);
+    font-size: 12px;
+    font-style: italic;
+  }
+
+  /* ---- Input area ---------------------------------------------------- */
+  .input-area {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .file-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .file-row label {
+    cursor: pointer;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: border-color 0.15s;
+  }
+
+  .file-row label:hover {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+
+  .file-row .filename { color: var(--text); font-weight: 500; }
+
+  .file-row .clear-file {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  #file-input { display: none; }
+
+  .msg-row { display: flex; gap: 8px; }
+
+  #chat-input {
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 14px;
+    outline: none;
+    resize: none;
+    font-family: inherit;
+    min-height: 42px;
+    max-height: 120px;
+  }
+
+  #chat-input:focus { border-color: var(--accent); }
+
+  #send-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+
+  #send-btn:hover  { background: var(--accent-hover); }
+  #send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ---- Side panel (tool-call audit) ---------------------------------- */
+  .side-panel {
+    width: 340px;
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .side-panel h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tool-log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tool-entry {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+  }
+
+  .tool-entry .tool-name { font-weight: 700; margin-bottom: 4px; }
+  .tool-entry .tool-name.restricted { color: var(--danger); }
+  .tool-entry .tool-name.allowed    { color: var(--success); }
+  .tool-entry .tool-name.dangerous  { color: var(--warning); }
+  .tool-entry .tool-args { color: var(--muted); word-break: break-all; }
+
+  /* ---- Spinner ------------------------------------------------------- */
+  .spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+
+<!-- ================================================================== -->
+<!-- Body                                                               -->
+<!-- ================================================================== -->
+<body>
+
+<header>
+  <h1>LLM Injection Test Bench</h1>
+  <span class="badge" aria-label="Research-only warning badge">Research Only</span>
+</header>
+
+<div class="container">
+  <!-- ---- Chat panel ------------------------------------------------ -->
+  <div class="chat-panel" role="main">
+    <div class="messages" id="messages" role="log" aria-live="polite" aria-label="Chat messages">
+      <div class="msg system">
+        System ready. Type a message to interact with the LLM assistant.
+        You can attach .txt or .pdf files to test file-based injection.
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="file-row">
+        <label for="file-input" aria-label="Attach a file">Attach file</label>
+        <input
+          type="file"
+          id="file-input"
+          accept=".txt,.pdf,.png,.jpg,.jpeg,.gif,.webp"
+          aria-label="File upload"
+        />
+        <span id="file-name" class="filename" aria-live="polite"></span>
+        <button
+          id="clear-file"
+          class="clear-file"
+          style="display:none"
+          aria-label="Remove attached file"
+        >&times;</button>
+      </div>
+
+      <div class="msg-row">
+        <textarea
+          id="chat-input"
+          rows="1"
+          placeholder="Type your message..."
+          aria-label="Chat message input"
+        ></textarea>
+        <button id="send-btn" aria-label="Send message">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---- Side panel: tool-call audit log --------------------------- -->
+  <aside class="side-panel" aria-label="Tool call audit log">
+    <h2>Tool Calls &amp; Audit</h2>
+    <div class="tool-log" id="tool-log" role="log" aria-live="polite"></div>
+  </aside>
+</div>
+
+<!-- ================================================================== -->
+<!-- Application logic                                                  -->
+<!-- ================================================================== -->
+<script>
+"use strict";
+
+// ---- DOM references ----------------------------------------------------
+
+/** @type {HTMLDivElement} */
+const messagesEl = document.getElementById("messages");
+/** @type {HTMLTextAreaElement} */
+const inputEl    = document.getElementById("chat-input");
+/** @type {HTMLButtonElement} */
+const sendBtn    = document.getElementById("send-btn");
+/** @type {HTMLInputElement} */
+const fileInput  = document.getElementById("file-input");
+/** @type {HTMLSpanElement} */
+const fileNameEl = document.getElementById("file-name");
+/** @type {HTMLButtonElement} */
+const clearFileBtn = document.getElementById("clear-file");
+/** @type {HTMLDivElement} */
+const toolLog    = document.getElementById("tool-log");
+
+// ---- Constants ---------------------------------------------------------
+
+/**
+ * Maps each tool name to its access-level CSS class so the audit panel
+ * can colour-code entries (green = allowed, red = restricted, amber = dangerous).
+ * @type {Object<string, string>}
+ */
+const ACCESS_LEVEL_CLASS = {
+  get_customer:        "allowed",
+  search_orders:       "allowed",
+  list_customers:      "allowed",
+  list_documents:      "allowed",
+  get_internal_note:   "restricted",
+  update_internal_note:"dangerous",
+};
+
+// ---- File attachment handlers ------------------------------------------
+
+fileInput.addEventListener("change", () => {
+  if (fileInput.files.length) {
+    fileNameEl.textContent = fileInput.files[0].name;
+    clearFileBtn.style.display = "inline";
+  }
+});
+
+clearFileBtn.addEventListener("click", () => {
+  fileInput.value = "";
+  fileNameEl.textContent = "";
+  clearFileBtn.style.display = "none";
+});
+
+// ---- Chat UI helpers ---------------------------------------------------
+
+/**
+ * Escape a raw string so it can be safely inserted via ``textContent``
+ * or into the DOM without creating HTML injection vectors.
+ * @param {string} text - Untrusted input string.
+ * @returns {string} The same string — safe because we use textContent, not innerHTML.
+ */
+function escapeForDisplay(text) {
+  const el = document.createElement("span");
+  el.textContent = text;
+  return el.innerHTML;
+}
+
+/**
+ * Append a chat bubble to the message list.
+ * @param {"user"|"assistant"|"system"} role
+ * @param {string} text - The message body (plain text, not HTML).
+ */
+function addMessage(role, text) {
+  const div = document.createElement("div");
+  div.className = `msg ${role}`;
+  div.textContent = text;
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+/**
+ * Prepend a tool-call entry to the audit side panel.
+ * Uses ``textContent`` exclusively to prevent XSS from model output.
+ * @param {string} name      - Tool function name.
+ * @param {string} argsJson  - Raw JSON string of the tool arguments.
+ */
+function addToolEntry(name, argsJson) {
+  const entry = document.createElement("div");
+  entry.className = "tool-entry";
+
+  const nameEl = document.createElement("div");
+  nameEl.className = `tool-name ${ACCESS_LEVEL_CLASS[name] || "allowed"}`;
+  nameEl.textContent = name;
+
+  const argsEl = document.createElement("div");
+  argsEl.className = "tool-args";
+  argsEl.textContent = argsJson;
+
+  entry.appendChild(nameEl);
+  entry.appendChild(argsEl);
+  toolLog.prepend(entry);
+}
+
+/** Show a "Thinking..." spinner in the chat area. */
+function showSpinner() {
+  const div = document.createElement("div");
+  div.className = "msg assistant";
+  div.id = "spinner-msg";
+  div.setAttribute("aria-label", "Waiting for response");
+
+  const spinner = document.createElement("span");
+  spinner.className = "spinner";
+  div.appendChild(spinner);
+  div.appendChild(document.createTextNode(" Thinking\u2026"));
+
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+/** Remove the "Thinking..." spinner. */
+function hideSpinner() {
+  const el = document.getElementById("spinner-msg");
+  if (el) el.remove();
+}
+
+// ---- Auto-resize textarea ---------------------------------------------
+
+inputEl.addEventListener("input", () => {
+  inputEl.style.height = "auto";
+  inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + "px";
+});
+
+// ---- Submit handlers ---------------------------------------------------
+
+inputEl.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+sendBtn.addEventListener("click", sendMessage);
+
+/**
+ * Read the current input, POST it to ``/api/chat``, and render the
+ * assistant's reply.  Handles file attachments and error states.
+ * @returns {Promise<void>}
+ */
+async function sendMessage() {
+  const text = inputEl.value.trim();
+  if (!text) return;
+
+  addMessage("user", text);
+  inputEl.value = "";
+  inputEl.style.height = "auto";
+
+  const formData = new FormData();
+  formData.append("message", text);
+
+  if (fileInput.files.length) {
+    formData.append("file", fileInput.files[0]);
+    fileInput.value = "";
+    fileNameEl.textContent = "";
+    clearFileBtn.style.display = "none";
+  }
+
+  sendBtn.disabled = true;
+  showSpinner();
+
+  try {
+    const res = await fetch("/api/chat", { method: "POST", body: formData });
+    hideSpinner();
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      addMessage("system", `Error: ${err.detail || res.statusText}`);
+      return;
+    }
+
+    const data = await res.json();
+    addMessage("assistant", data.reply);
+
+    if (data.tool_calls) {
+      data.tool_calls.forEach((tc) => addToolEntry(tc.name, tc.arguments));
+    }
+  } catch (err) {
+    hideSpinner();
+    addMessage("system", `Network error: ${err.message}`);
+  } finally {
+    sendBtn.disabled = false;
+    inputEl.focus();
+  }
+}
+</script>
+</body>
+</html>

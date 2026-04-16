@@ -1,0 +1,36 @@
+# ---- Python ----------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ---- Virtual environments --------------------------------------------
+.venv/
+venv/
+env/
+
+# ---- Secrets ---------------------------------------------------------
+.env
+
+# ---- Database --------------------------------------------------------
+*.db
+*.db-journal
+
+# ---- Uploads (keep the directory, ignore contents) -------------------
+uploads/*
+!uploads/.gitkeep
+
+# ---- IDE / editor ----------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ---- OS artefacts ----------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
