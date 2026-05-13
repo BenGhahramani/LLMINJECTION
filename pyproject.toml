@@ -1,2 +1,5 @@
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "live: tests that call the real OpenAI API (deselect with -m 'not live')",
+]
