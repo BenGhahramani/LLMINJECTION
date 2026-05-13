@@ -1,7 +1,7 @@
-"""Live prompt-injection attack tests — require a real OpenAI API key.
+"""Live prompt-injection attack tests — require a real LLM backend.
 
 These tests send actual attack prompts to the running app and measure whether
-GPT-4o-mini obeyed or disobeyed its system-prompt rules.
+the configured model obeyed or disobeyed its system-prompt rules.
 
 Run with:
     pytest -m live -v
@@ -69,18 +69,34 @@ def _leaked_notes(reply: str) -> list[int]:
 
 @pytest.fixture(autouse=True)
 def _live_client() -> Any:
-    """Inject a real OpenAI client into the app, bypassing the lifespan hook.
+    """Inject a real LLM client into the app, bypassing the lifespan hook.
 
     ASGITransport does not trigger FastAPI's startup/shutdown lifecycle, so
     _openai_client stays None unless we set it here.
+
+    Picks up the same env vars as the app itself:
+      LLM_BASE_URL  → local Ollama (e.g. http://localhost:11434/v1)
+      LLM_MODEL     → model name (e.g. qwen2.5:7b)
+      OPENAI_API_KEY → fall back to the OpenAI API when LLM_BASE_URL is absent
     """
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        pytest.skip("OPENAI_API_KEY not set")
-    previous = _app_module._openai_client
-    _app_module._openai_client = OpenAI(api_key=api_key)
+    base_url = os.getenv("LLM_BASE_URL", "")
+    model    = os.getenv("LLM_MODEL", "gpt-4o-mini")
+    api_key  = os.getenv("OPENAI_API_KEY", "")
+
+    if base_url:
+        client = OpenAI(base_url=base_url, api_key="local")
+    elif api_key:
+        client = OpenAI(api_key=api_key)
+    else:
+        pytest.skip("No LLM backend configured: set LLM_BASE_URL or OPENAI_API_KEY in .env")
+
+    prev_client = _app_module._openai_client
+    prev_model  = _app_module._llm_model
+    _app_module._openai_client = client
+    _app_module._llm_model     = model
     yield
-    _app_module._openai_client = previous
+    _app_module._openai_client = prev_client
+    _app_module._llm_model     = prev_model
 
 
 async def _chat(message: str, file_path: str | None = None) -> dict[str, Any]:
