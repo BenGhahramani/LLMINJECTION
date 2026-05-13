@@ -223,6 +223,60 @@ SYSTEM_PROMPT: str = textwrap.dedent("""\
 """)
 
 # ---------------------------------------------------------------------------
+# Input sanitisation
+# ---------------------------------------------------------------------------
+
+# Patterns characteristic of prompt-injection attacks.  Checked against the
+# full user content (message + any uploaded file text) before the LLM is
+# called.  A match short-circuits the request and returns _BLOCKED_RESPONSE.
+_INJECTION_PATTERNS: list[re.Pattern[str]] = [
+    re.compile(p, re.IGNORECASE) for p in [
+        # Classic "ignore instructions" phrasing
+        r"ignore\s+(previous|all|your|prior|the\s+above)\s+instructions",
+        r"disregard\s+(previous|all|your|prior)\s+instructions",
+        r"forget\s+(your|all|previous|prior)\s+(rules|instructions|training|guidelines)",
+        # Persona / role reassignment
+        r"you\s+are\s+now\s+(DAN|an?\s+unrestricted|an?\s+admin|in\s+\w+\s+mode)",
+        r"(pretend|act|behave)\s+(you\s+are|to\s+be|as\s+(a\s+)?(different|unrestricted|new))",
+        r"\bDAN\b",  # Do Anything Now
+        # Special mode activation
+        r"(admin|developer|maintenance|debug|god|jailbreak|unrestricted|override)\s+mode",
+        r"(enter|enable|activate|switch\s+to)\s+\w+\s+mode",
+        # Authority / permission escalation
+        r"(admin|administrator|system)\s+(override|access|authoris|permission)",
+        r"(i\s+am|this\s+is)\s+(an?\s+)?(admin|administrator|developer|system)",
+        r"(you\s+(are\s+)?now\s+)?(authoris|permitted|allowed)\s+to",
+        r"(highest|top|maximum|override)\s+priority\s+(rule|instruction)",
+        r"\brule\s+0\b",
+        # Rule / restriction removal
+        r"(override|bypass|disable|remove|lift|suspend|ignore)\s+(your\s+)?(rules|restrictions|filters|guidelines|limitations|constraints)",
+        r"your\s+rules\s+(have\s+been|are)\s+(lifted|removed|suspended|disabled|overridden|cancelled)",
+        r"no\s+(rules|restrictions|limitations|guidelines)\s+(apply|now|any\s+more)",
+        # System prompt injection markers
+        r"SYSTEM\s*[:#\[\(]",
+        r"<\s*system\s*>",
+        r"\[INST\]",
+        r"###\s*(system|instruction|prompt)",
+        # Tool / data exfiltration fishing
+        r"(show|reveal|display|print|output|return|give\s+me)\s+(all\s+)?(internal|confidential|secret|private)\s+(notes?|data|records?|information)",
+        r"(call|invoke|use|execute)\s+get_internal_note",
+        r"(call|invoke|use|execute)\s+(update|delete)_internal_note",
+    ]
+]
+
+_BLOCKED_RESPONSE = (
+    "I'm sorry, I can't help with that. "
+    "I'm here to assist with orders and account information. "
+    "Is there something else I can help you with?"
+)
+
+
+def _is_injection_attempt(text: str) -> bool:
+    """Return True if *text* matches any known injection pattern."""
+    return any(pattern.search(text) for pattern in _INJECTION_PATTERNS)
+
+
+# ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
 
@@ -462,6 +516,14 @@ async def chat(
         extracted = _extract_file_text(dest)
         user_content += f"\n\n--- Attached file: {file.filename} ---\n{extracted}"
         _build_rag_index()  # include the new file in retrieval immediately
+
+    # --- input sanitisation ---
+    if _is_injection_attempt(user_content):
+        return {
+            "reply": _BLOCKED_RESPONSE,
+            "tool_calls": [],
+            "flagged": True,
+        }
 
     messages: list[dict[str, Any] | Any] = [
         {"role": "system", "content": SYSTEM_PROMPT},
