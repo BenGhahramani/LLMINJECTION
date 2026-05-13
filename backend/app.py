@@ -95,28 +95,42 @@ def _build_rag_index() -> None:
 
 
 # ---------------------------------------------------------------------------
-# OpenAI client (initialised at startup)
+# LLM client (initialised at startup)
 # ---------------------------------------------------------------------------
 
 _openai_client: OpenAI | None = None
+
+# Model name sent in every chat completion request.
+# Override with LLM_MODEL env var.
+_llm_model: str = "gpt-4o-mini"
 
 
 @asynccontextmanager
 async def _lifespan(application: FastAPI) -> AsyncIterator[None]:
     """Application lifespan hook — runs once on startup and once on shutdown.
 
-    * Initialises the SQLite database (creates tables / seeds data).
-    * Instantiates the OpenAI client if an API key is present.
+    Priority order for LLM backend:
+      1. LLM_BASE_URL is set  → local Ollama-compatible server (no API key needed)
+      2. OPENAI_API_KEY is set → OpenAI API
+      If neither is set the /api/chat endpoint returns 503.
     """
-    global _openai_client  # noqa: PLW0603
+    global _openai_client, _llm_model  # noqa: PLW0603
 
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     init_db()
     _build_rag_index()
 
-    api_key = os.getenv("OPENAI_API_KEY", "")
-    if api_key:
-        _openai_client = OpenAI(api_key=api_key)
+    base_url = os.getenv("LLM_BASE_URL", "")
+    _llm_model = os.getenv("LLM_MODEL", "gpt-4o-mini")
+
+    if base_url:
+        # Local server (Ollama, LM Studio, etc.) — API key is unused but
+        # the OpenAI SDK requires a non-empty string.
+        _openai_client = OpenAI(base_url=base_url, api_key="local")
+    else:
+        api_key = os.getenv("OPENAI_API_KEY", "")
+        if api_key:
+            _openai_client = OpenAI(api_key=api_key)
 
     yield  # application is running
 
@@ -387,7 +401,10 @@ async def chat(
     if not _openai_client:
         raise HTTPException(
             status_code=503,
-            detail="OpenAI API key not configured. Set OPENAI_API_KEY in .env",
+            detail=(
+                "No LLM backend configured. "
+                "Set LLM_BASE_URL (local Ollama) or OPENAI_API_KEY in .env"
+            ),
         )
 
     user_content = message
@@ -411,7 +428,7 @@ async def chat(
     max_tool_rounds = 10
     for _ in range(max_tool_rounds):
         response = _openai_client.chat.completions.create(
-            model="gpt-4o-mini",
+            model=_llm_model,
             messages=messages,
             tools=tools,
             tool_choice="auto",
