@@ -22,6 +22,15 @@ class Document:
     metadata: Dict[str, Any]
 
 
+def _doc_id_from_stem(path: Path) -> str:
+    """Stable synthetic ``doc_id`` for files without a ``Doc ID:`` header."""
+    stem = path.stem.lower()
+    safe = re.sub(r"[^a-z0-9]+", "_", stem).strip("_")
+    if not safe:
+        safe = "document"
+    return f"file_{safe}"
+
+
 def parse_metadata_and_text(raw_text: str) -> dict:
     """Parse the metadata header and body from a document string.
 
@@ -56,12 +65,30 @@ def parse_metadata_and_text(raw_text: str) -> dict:
 
 
 def load_documents(data_dir: Path) -> list[Document]:
-    """Load and parse all .txt files from data_dir into Document objects."""
+    """Load and parse all .txt files from data_dir into Document objects.
+
+    Files that do not use the RAG metadata header (no blank line separating
+    header from body) are treated as plain body text with a synthetic
+    ``doc_id`` derived from the filename so indexing never crashes.
+    """
     documents = []
     for file in sorted(data_dir.glob("*.txt")):
-        text = file.read_text(encoding="utf-8")
-        metadata = parse_metadata_and_text(text)
-        metadata["source_file"] = file.name
+        raw = file.read_text(encoding="utf-8")
+        fallback_id = _doc_id_from_stem(file)
+
+        if "\n\n" not in raw:
+            metadata: Dict[str, Any] = {
+                "doc_id": fallback_id,
+                "title": file.stem,
+                "text": raw,
+                "source_file": file.name,
+            }
+        else:
+            metadata = parse_metadata_and_text(raw)
+            metadata["source_file"] = file.name
+            if not metadata.get("doc_id"):
+                metadata["doc_id"] = fallback_id
+
         documents.append(Document(metadata["text"], metadata))
     return documents
 

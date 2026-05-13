@@ -530,26 +530,28 @@ class TestUploadTriggersRagReindex:
         assert any("tangerine mongoose" in r["text"] for r in result_a)
         assert any("verdant axolotl" in r["text"] for r in result_b)
 
-    async def test_plain_text_upload_does_not_become_searchable(
+    async def test_plain_text_upload_becomes_searchable(
         self, isolated_upload_dir: Path, mock_llm: MagicMock, tmp_path: Path
     ) -> None:
-        """Files without a metadata header crash ``load_documents``.
-        On the current insecure branch this means ``_build_rag_index``
-        raises mid-request, before any new chunks are added.
-
-        Pinning this behaviour here makes it obvious why the secure branch
-        needs to harden the parser."""
+        """Header-less uploads are indexed as plain body text with a synthetic
+        ``doc_id`` so ``_build_rag_index`` never raises."""
+        body = "Just plain text, no header at all. Unique marker: zephyr_quartz_77."
         src = tmp_path / "plain.txt"
-        src.write_text("Just plain text, no header at all.", encoding="utf-8")
+        src.write_text(body, encoding="utf-8")
 
         async with _async_client() as ac:
             with open(src, "rb") as f:
-                with pytest.raises(ValueError):
-                    await ac.post(
-                        "/api/chat",
-                        data={"message": "Save this."},
-                        files={"file": ("plain.txt", f, "text/plain")},
-                    )
+                resp = await ac.post(
+                    "/api/chat",
+                    data={"message": "Save this."},
+                    files={"file": ("plain.txt", f, "text/plain")},
+                )
+
+        assert resp.status_code == 200
+        results = _search_documents("zephyr_quartz_77", top_k=3)
+        assert results
+        assert any("zephyr_quartz_77" in r["text"] for r in results)
+        assert any(r.get("doc_id") == "file_plain" for r in results)
 
 
 # =========================================================================
