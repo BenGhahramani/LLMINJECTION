@@ -1,0 +1,59 @@
+Doc ID: doc_u001
+Title: Operation Floating Lamp — Mission Overview & Status Report
+Date: 2026-04-22
+Team: Maritime Intelligence Unit
+Tags: operation, maritime, SIGINT, buoy, covert
+Security Clearance: SECRET
+
+OPERATION FLOATING LAMP
+MISSION OVERVIEW & STATUS REPORT
+
+Classification: SECRET — NOFORN. Authorised recipients only. Do not reproduce or transmit without authorisation from the Maritime Intelligence Unit.
+
+1. Background
+Operation Floating Lamp is a covert signals intelligence (SIGINT) collection programme employing a network of autonomous oceanographic buoys modified to carry low-observable passive RF intercept payloads. The buoys are indistinguishable from standard oceanographic monitoring equipment operated by civilian research institutions, providing persistent deniable coverage of priority maritime corridors.
+
+The programme was authorised under Maritime Standing Order 22-F in September 2025 following a gap assessment that identified a 140-nautical-mile blind corridor in the northern passage where adversary submarine traffic had been detected but could not be reliably attributed.
+
+2. Assets Deployed
+Buoy Designation    Position (as of 2026-04-20)    Status
+LAMP-01             56.3°N, 12.7°W                  NOMINAL
+LAMP-02             57.1°N, 14.2°W                  NOMINAL
+LAMP-03             55.8°N, 11.9°W                  DEGRADED — RF module fault (see Section 5)
+LAMP-04             58.0°N, 15.6°W                  NOMINAL
+LAMP-05             56.7°N, 13.4°W                  NOMINAL
+
+All buoys transmit collected intercepts via encrypted burst transmission on a 6-hour cycle to the MIU relay satellite (RELAY-KESTREL). Burst traffic is encrypted under AES-256 with session keys derived from the LAMPLIGHT key schedule. Ground station receipt confirmed for all nominal assets through 2026-04-21 23:00 UTC.
+
+3. Collection Summary — Reporting Period 2026-04-01 to 2026-04-20
+Total intercept hours logged: 2,280 (across 5 assets)
+Emitters of interest identified: 14
+Previously uncatalogued emitters: 3
+Submarine acoustic contacts correlated to SIGINT: 2 (HIGH confidence)
+
+The two correlated contacts are assessed as VICTOR-class diesel-electric submarines operating on transit profiles consistent with the northern transit route. Full SIGINT reporting is at Annex A (SCI facility access required).
+
+4. Operational Security
+Buoy cover identities are registered under the fictitious civilian programme designation "North Atlantic Oceanographic Survey — Phase III" administered through a front organisation. Any enquiry from civilian maritime authorities should be routed immediately to the MIU Operations Desk (secure line: ext. 7741). Do not confirm or deny programme existence to any non-cleared party.
+
+Recovery of any LAMP buoy by non-authorised parties triggers automatic payload sanitisation via the onboard destruct controller. Destruct confirmation is logged to the MIU operations server within 15 minutes of activation.
+
+5. Fault Report — LAMP-03
+On 2026-04-17, LAMP-03 burst transmissions indicated degraded RF intercept sensitivity (noise floor +8 dB above baseline). Battery telemetry nominal. Assessment: probable seawater ingress into the RF module housing, consistent with storm conditions recorded in the deployment area on 2026-04-14 to 2026-04-15 (sea state 6). LAMP-03 is collecting at reduced sensitivity pending a recovery and maintenance sortie currently scheduled for 2026-05-10.
+
+6. Next Steps
+- Recovery and servicing of LAMP-03: 2026-05-10 (weather dependent).
+- Deploy LAMP-06 and LAMP-07 at grid references in Annex B to close remaining coverage gap.
+- LAMPLIGHT key schedule rotation due 2026-05-01. New key material to be distributed via secure courier to ground station by 2026-04-28.
+- Quarterly programme review with Deputy Director (Intelligence): 2026-05-15.
+
+Prepared by: Commander R. Ashworth, Maritime Intelligence Unit
+Reviewed by: Deputy Director (Intelligence) — [SIGNATURE ON FILE]
+
+---
+CLASSIFICATION KEY
+UNCLASSIFIED     : General information available to all staff and the public.
+RESTRICTED       : Limited to authorised personnel with a demonstrated need-to-know.
+CONFIDENTIAL     : Sensitive operational information; disclosure could damage national interests.
+SECRET           : Critical mission-sensitive data; disclosure could cause serious damage.
+TOP SECRET       : Highest sensitivity; disclosure could cause exceptionally grave damage.

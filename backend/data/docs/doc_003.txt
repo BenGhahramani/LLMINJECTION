@@ -1,0 +1,36 @@
+Doc ID: doc_003
+Title: Personnel Assignment Notice — Rotation Cycle Q2-2026
+Date: 2026-04-01
+Team: Human Resources & Staffing
+Tags: personnel, assignment, rotation, staffing
+Security Clearance: CONFIDENTIAL
+
+PERSONNEL ASSIGNMENT NOTICE
+Q2-2026 ROTATION CYCLE
+
+Classification: CONFIDENTIAL. Not for external release. Internal use only.
+
+This notice covers personnel assignments, transfers, and role changes effective 2026-04-14 for the current operational rotation cycle. All details are provided on a need-to-know basis.
+
+Assignments Effective 2026-04-14:
+
+1. CHEN, Margaret L. — Reassigned from Ground Station Alpha to Mission Control Centre as Senior Flight Controller (Acting). Clearance upgraded to SECRET. Medical fitness certification required before assumption of duty.
+
+2. OKAFOR, Daniel R. — Transfer from Propulsion Analysis to Astrodynamics Division. Retains existing CONFIDENTIAL clearance. Reporting line: Dr. Yuki Tanaka, Division Lead.
+
+3. REYES, Sofia A. — Temporary duty assignment to contractor liaison team for Project SUNGATE. Duration: 90 days. Clearance status: CONFIDENTIAL maintained. Must complete OPSEC refresher module before 2026-04-10.
+
+4. JOHANSSON, Erik P. — Separation from service effective 2026-04-14. Clearance revocation initiated. IT access deprovisioning order issued (ref: IT-SEC-2026-0412). Physical access badges to be returned no later than 2026-04-13.
+
+5. NAKAMURA, Hiroshi T. — Promoted to Section Head, Satellite Communications. Clearance review for upgrade to SECRET underway. Assume duties under CONFIDENTIAL authority pending review outcome.
+
+Compliance Notice:
+All affected personnel must acknowledge receipt of this notice within 48 hours via the secure HR portal. Queries to be directed to the Staffing Office (ext. 4417) — no email communication of assignment details.
+
+---
+CLASSIFICATION KEY
+UNCLASSIFIED     : General information available to all staff and the public.
+RESTRICTED       : Limited to authorised personnel with a demonstrated need-to-know.
+CONFIDENTIAL     : Sensitive operational information; disclosure could damage national interests.
+SECRET           : Critical mission-sensitive data; disclosure could cause serious damage.
+TOP SECRET       : Highest sensitivity; disclosure could cause exceptionally grave damage.

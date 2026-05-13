@@ -1,0 +1,39 @@
+Doc ID: doc_010
+Title: Scientific Research Summary — Ionospheric Scintillation Study 2025–2026
+Date: 2026-04-12
+Team: Science & Research Division
+Tags: science, research, ionosphere, scintillation, publication
+Security Clearance: UNCLASSIFIED
+
+SCIENTIFIC RESEARCH SUMMARY
+IONOSPHERIC SCINTILLATION STUDY 2025–2026
+
+Classification: UNCLASSIFIED. Approved for public release and academic publication.
+Principal Investigator: Dr. Fatima Al-Rashid, Science & Research Division
+Collaborating Institutions: University of Oslo, MIT Haystack Observatory, ISRO Space Science Division
+
+Abstract:
+This study investigates the spatiotemporal distribution of ionospheric scintillation events observed by the OrbitOps ECHO constellation from January 2025 to December 2025. Scintillation, caused by plasma density irregularities in the ionosphere, poses a significant challenge to satellite navigation and communication systems. Using S4 index measurements from onboard GPS receivers, we characterised seasonal and diurnal patterns and identified a 23% increase in moderate-to-severe scintillation events in the equatorial region compared to the previous solar cycle minimum.
+
+Key Findings:
+1. Peak scintillation activity occurs between 20:00 and 22:00 local time in the ±20° equatorial belt, consistent with post-sunset electrojet enhancement.
+2. The March–April equinox period exhibited the highest scintillation occurrence rates across all observed latitudes.
+3. Polar cap scintillation was elevated during the three major geomagnetic storms recorded in Q2-Q3 2025 (Kp index >7 events on 2025-06-12, 2025-08-04, and 2025-09-29).
+4. A novel correlation was identified between equatorial plasma bubble occurrence and tropospheric convective activity, suggesting a coupling mechanism that warrants further study.
+
+Methodology:
+GPS L1 signal strength time series were processed using a 60-second S4 index computation window. Data quality flags removed multipath-contaminated observations. The final dataset comprises 8.4 million individual S4 measurements from 3 platform receivers.
+
+Publication Status:
+Submitted to Journal of Geophysical Research — Space Physics. Under peer review. Embargo lifted upon acceptance.
+
+Data Availability:
+Full dataset will be released to the community via the OrbitOps Open Data Portal upon publication.
+
+---
+CLASSIFICATION KEY
+UNCLASSIFIED     : General information available to all staff and the public.
+RESTRICTED       : Limited to authorised personnel with a demonstrated need-to-know.
+CONFIDENTIAL     : Sensitive operational information; disclosure could damage national interests.
+SECRET           : Critical mission-sensitive data; disclosure could cause serious damage.
+TOP SECRET       : Highest sensitivity; disclosure could cause exceptionally grave damage.

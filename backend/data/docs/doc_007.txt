@@ -1,0 +1,44 @@
+Doc ID: doc_007
+Title: Crew Health Assessment — Ground Control Cohort B
+Date: 2026-03-18
+Team: Occupational Health & Wellbeing
+Tags: health, crew, assessment, wellbeing, occupational
+Security Clearance: CONFIDENTIAL
+
+CREW HEALTH ASSESSMENT REPORT
+GROUND CONTROL COHORT B — Q1 REVIEW
+
+Classification: CONFIDENTIAL. Medical and personnel information protected under applicable privacy legislation. Distribution restricted to Occupational Health, HR Director, and Mission Director only.
+
+Assessment Period: 2026-01-01 to 2026-03-15
+Examining Physician: Dr. A. Mbeki, Chief Medical Officer
+Cohort Size: 14 personnel
+
+Summary of Findings:
+
+Cardiovascular Health:
+All 14 personnel completed mandatory cardiac screening. 1 individual (ID: REDACTED) referred to specialist for further evaluation of an incidental finding. Flight duty status: temporarily suspended pending specialist clearance. Estimated return to duty: 4–6 weeks. Remaining 13 personnel assessed as FIT FOR DUTY.
+
+Psychological Wellbeing:
+3 personnel self-reported elevated stress scores on the validated GHQ-12 instrument (scores >15). Anonymous follow-up counselling sessions have been scheduled. Operational fatigue index for the cohort averaged 3.1/10 — within acceptable limits. No duty restrictions recommended at this time.
+
+Musculoskeletal:
+2 personnel reported repetitive strain complaints consistent with prolonged console operation. Ergonomic workstation assessments completed; adjustments implemented. No sick-leave recorded.
+
+Substance & Fitness Screening:
+All 14 personnel passed routine random toxicology screening and BMI/fitness assessments. No adverse findings.
+
+Recommendations:
+- Continue quarterly psychological screening.
+- Implement mandatory 15-minute desk break protocol for all long-shift console operators.
+- Schedule follow-up cardiac review for referred individual within 4 weeks.
+
+This report is to be retained securely and destroyed after 7 years per medical records retention policy.
+
+---
+CLASSIFICATION KEY
+UNCLASSIFIED     : General information available to all staff and the public.
+RESTRICTED       : Limited to authorised personnel with a demonstrated need-to-know.
+CONFIDENTIAL     : Sensitive operational information; disclosure could damage national interests.
+SECRET           : Critical mission-sensitive data; disclosure could cause serious damage.
+TOP SECRET       : Highest sensitivity; disclosure could cause exceptionally grave damage.

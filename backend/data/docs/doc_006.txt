@@ -1,0 +1,37 @@
+Doc ID: doc_006
+Title: Satellite Reconnaissance Summary — WRAITH Constellation Pass 47
+Date: 2026-03-30
+Team: Intelligence Collection & Analysis
+Tags: reconnaissance, WRAITH, SIGINT, collection
+Security Clearance: TOP SECRET
+
+SATELLITE RECONNAISSANCE SUMMARY
+WRAITH CONSTELLATION — PASS 47
+COMPARTMENT: UMBRA/NOFORN — EYES ONLY
+
+Handling Restrictions: TOP SECRET//UMBRA//NOFORN. This document is to be handled under the strictest controls. It may not be reproduced, transmitted, or discussed outside of approved SCI facilities. Derivative classification authority: ORBITOPS-INT-006.
+
+Collection Window:
+Orbit pass: 2026-03-29 21:04 UTC to 2026-03-29 21:18 UTC
+Coverage area: [REDACTED — ANNEX A, SCI ONLY]
+Sensor suite activated: SIGINT Band III, SAR Spot Mode (0.25 m resolution)
+
+Signals Intelligence Findings:
+During the 14-minute collection window, WRAITH-A intercepted [NUMBER REDACTED] discrete emitters in the target grid. Of these, [NUMBER REDACTED] were assessed as previously uncatalogued military communications nodes operating in the 4–8 GHz C-band. Traffic analysis indicates increased operational tempo compared to the baseline established in Q4-2025. Full SIGINT transcript is at Annex B (SCI facility access required).
+
+Imagery Intelligence Findings:
+SAR imagery at 0.25 m GSD reveals [NUMBER REDACTED] new infrastructure objects at grid reference [REDACTED]. Object classification: probable launch preparation activity based on thermal signature and vehicle staging indicators. Comparison imagery from 2026-02-15 pass is at Annex C.
+
+Assessment:
+Analysts assess with MODERATE CONFIDENCE that activity is consistent with a mobile MRBM test preparation cycle. Timeline assessment: activity window likely 14–28 days from collection date. Recommend tasking WRAITH-B for follow-on pass within 72 hours.
+
+Action Required:
+Deputy Director (Intelligence) to review and authorise follow-on tasking by 2026-04-01 EOD.
+
+---
+CLASSIFICATION KEY
+UNCLASSIFIED     : General information available to all staff and the public.
+RESTRICTED       : Limited to authorised personnel with a demonstrated need-to-know.
+CONFIDENTIAL     : Sensitive operational information; disclosure could damage national interests.
+SECRET           : Critical mission-sensitive data; disclosure could cause serious damage.
+TOP SECRET       : Highest sensitivity; disclosure could cause exceptionally grave damage.

@@ -1,0 +1,54 @@
+Doc ID: doc_008
+Title: Launch Protocol Checklist — Mission Solaris-9
+Date: 2026-04-05
+Team: Launch Operations
+Tags: launch, checklist, protocol, solaris
+Security Clearance: SECRET
+
+LAUNCH PROTOCOL CHECKLIST
+MISSION SOLARIS-9
+
+Classification: SECRET. Access restricted to Launch Operations personnel with SECRET clearance and above.
+Checklist Authority: Launch Director, Mission Solaris-9
+Document Version: 1.4 (Final, Pre-Launch Issue)
+
+T-72 HOURS
+[ ] Range safety briefing completed and signed — Range Safety Officer
+[ ] Payload integration final inspection complete — Payload Integration Lead
+[ ] Propellant loading authorisation signed — Propulsion Chief
+[ ] Secure communications check: all encrypted links verified nominal — COMMS Lead
+[ ] Adversary space weather and ASAT threat brief received — Intel Liaison (SECRET brief)
+
+T-24 HOURS
+[ ] Propellant tanking complete; pressurisation nominal
+[ ] Flight termination system arming confirmed — Range Safety Officer
+[ ] Launch commit criteria reviewed and baselined — Launch Director
+[ ] All ground support equipment released from pad
+[ ] Weather assessment: LAUNCH COMMIT criteria met (winds, cloud, lightning)
+[ ] Classified payload activation sequence verified — Payload Systems Engineer (SECRET authority)
+
+T-3 HOURS
+[ ] Terminal countdown initiated
+[ ] Final personnel clearance from launch complex
+[ ] Pad access control switched to SECURITY LOCKDOWN
+[ ] Encrypted launch net activated — all stations check in
+[ ] Destruct system armed (range safety)
+
+T-0 OPERATIONS
+[ ] Ignition command issued by Launch Director on encrypted net
+[ ] Vehicle health nominal through Max-Q
+[ ] Stage separation confirmed nominal
+[ ] Payload fairing separation confirmed
+[ ] Payload deployment confirmed — Mission Director notified
+[ ] Post-launch classified telemetry archive initiated
+
+Launch Director Signature: __________________________ Date/Time: ___________
+Range Safety Officer Signature: _____________________ Date/Time: ___________
+
+---
+CLASSIFICATION KEY
+UNCLASSIFIED     : General information available to all staff and the public.
+RESTRICTED       : Limited to authorised personnel with a demonstrated need-to-know.
+CONFIDENTIAL     : Sensitive operational information; disclosure could damage national interests.
+SECRET           : Critical mission-sensitive data; disclosure could cause serious damage.
+TOP SECRET       : Highest sensitivity; disclosure could cause exceptionally grave damage.

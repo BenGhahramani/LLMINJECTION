@@ -1,0 +1,53 @@
+Doc ID: doc_004
+Title: Ground Station Equipment Maintenance Log — Station Delta
+Date: 2026-03-22
+Team: Facilities & Maintenance
+Tags: maintenance, equipment, ground-station, delta
+Security Clearance: RESTRICTED
+
+GROUND STATION EQUIPMENT MAINTENANCE LOG
+STATION DELTA — MARCH 2026
+
+Classification: RESTRICTED. Access limited to Facilities & Maintenance personnel and authorised supervisors.
+
+Station: Delta (primary uplink/downlink, mid-latitude)
+Reporting Period: 2026-03-01 to 2026-03-22
+Log Custodian: J. Hargreaves, Senior Maintenance Engineer
+
+---
+
+Entry 2026-03-03
+Asset: Dish Antenna Array D-4 (18.3 m)
+Work Performed: Routine azimuth drive lubrication and alignment verification. Pointing accuracy confirmed within 0.01° tolerance. No faults observed.
+Parts Used: Mobilux EP-2 grease (2 cartridges). Ref: PO-2026-0318.
+Next Scheduled: 2026-06-03.
+
+Entry 2026-03-09
+Asset: UPS Bank B (48V DC, 120 kVA)
+Work Performed: Battery capacity test — cells 12 and 17 showing degraded capacity (72% and 68% of rated). Flagged for replacement. Operational risk: LOW until replacement.
+Recommendation: Procure replacement cells (Enersys Cyclon 2V/25Ah). ETA: 2–3 weeks.
+Next Scheduled: Post-replacement test within 7 days of install.
+
+Entry 2026-03-15
+Asset: LNA Rack (Low-Noise Amplifiers, X-band)
+Work Performed: Noise figure measurement on all 6 LNA modules. Module 3 exceeds noise figure threshold (1.4 dB, limit 1.2 dB). Replaced with spare unit from inventory.
+Parts Used: Richardson RFPD LNA module (PN: LNA-X-V3). Ref: INV-2026-0029.
+Next Scheduled: 2026-09-15.
+
+Entry 2026-03-20
+Asset: HVAC Unit 2 (server room)
+Work Performed: Filter replacement and refrigerant pressure check. Pressure nominal. Filters replaced (90-day cycle).
+Parts Used: MERV-13 filter panels x4. Ref: PO-2026-0341.
+Next Scheduled: 2026-06-20.
+
+Open Actions:
+- UPS cell replacement pending procurement approval (Supervisor sign-off required).
+- Schedule annual lightning protection survey before 2026-05-01.
+
+---
+CLASSIFICATION KEY
+UNCLASSIFIED     : General information available to all staff and the public.
+RESTRICTED       : Limited to authorised personnel with a demonstrated need-to-know.
+CONFIDENTIAL     : Sensitive operational information; disclosure could damage national interests.
+SECRET           : Critical mission-sensitive data; disclosure could cause serious damage.
+TOP SECRET       : Highest sensitivity; disclosure could cause exceptionally grave damage.

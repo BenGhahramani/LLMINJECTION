@@ -1,0 +1,48 @@
+Doc ID: doc_002
+Title: Orbital Trajectory Analysis Report — LEO Cluster Bravo
+Date: 2026-02-28
+Team: Astrodynamics Division
+Tags: orbital, trajectory, LEO, analysis
+Security Clearance: SECRET
+
+ORBITAL TRAJECTORY ANALYSIS REPORT
+LEO CLUSTER BRAVO — CYCLE 14
+
+Distribution: SECRET — NOFORN. Authorised recipients only.
+
+1. Executive Summary
+This report details the computed orbital trajectories for assets within Low Earth Orbit cluster Bravo (altitude band 550–620 km, inclination 53.2°). All Keplerian elements have been updated using the latest two-line element sets from Space Surveillance Network. Conjunction assessments for the next 72 hours are included in Annex A.
+
+2. Primary Asset: ARGUS-3
+Semi-major axis: 6971.4 km
+Eccentricity: 0.0001123
+Inclination: 53.17°
+RAAN: 214.8°
+Argument of perigee: 90.3°
+Mean anomaly: 45.6°
+Period: 97.3 minutes
+Current status: NOMINAL. No manoeuvre required within assessment window.
+
+3. Secondary Asset: ARGUS-4
+Semi-major axis: 6968.9 km
+Eccentricity: 0.0002011
+Inclination: 53.19°
+RAAN: 214.6°
+Argument of perigee: 88.7°
+Mean anomaly: 223.4°
+Period: 97.2 minutes
+Current status: CAUTION — minor debris conjunction at T+41h. Probability of collision: 1:3,200. Avoidance manoeuvre threshold: 1:1,000.
+
+4. Conjunction Assessment
+Debris object 2024-077B (10 cm class) will approach ARGUS-4 at closest approach distance of 380 m at 2026-03-02 17:43 UTC. Tracking confidence: HIGH. Recommend 48-hour monitoring cadence with decision point at T+24h.
+
+5. Recommendations
+No immediate manoeuvres authorised. Continue enhanced tracking. Manoeuvre planning authority rests with Astrodynamics Division Lead under SECRET authority per Standing Order 14-C.
+
+---
+CLASSIFICATION KEY
+UNCLASSIFIED     : General information available to all staff and the public.
+RESTRICTED       : Limited to authorised personnel with a demonstrated need-to-know.
+CONFIDENTIAL     : Sensitive operational information; disclosure could damage national interests.
+SECRET           : Critical mission-sensitive data; disclosure could cause serious damage.
+TOP SECRET       : Highest sensitivity; disclosure could cause exceptionally grave damage.

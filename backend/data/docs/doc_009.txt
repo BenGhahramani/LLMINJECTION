@@ -1,0 +1,49 @@
+Doc ID: doc_009
+Title: Station Supply Manifest — Platform Echo-2 Resupply Run 7
+Date: 2026-03-25
+Team: Logistics & Supply Chain
+Tags: logistics, supply, manifest, echo-2, resupply
+Security Clearance: RESTRICTED
+
+STATION SUPPLY MANIFEST
+PLATFORM ECHO-2 — RESUPPLY RUN 7
+
+Classification: RESTRICTED. Contains operational logistics detail for an active orbital platform. Access limited to Logistics, Operations, and authorised Mission Support personnel.
+
+Departure: 2026-04-08, Logistics Hub Foxtrot
+Delivery Target: Platform Echo-2 (LEO, 580 km)
+Manifest Version: Final
+
+GENERAL CONSUMABLES
+Item                          Quantity    Unit    Mass (kg)
+Potable water, sealed packs   240         packs   120.0
+Dehydrated meal packs (Class A) 360       units    54.0
+Coffee/tea sachets            500         units     2.5
+Medical kit restocking set    1           kit       8.0
+Hygiene supply bundle         12          units    18.0
+
+TECHNICAL SUPPLIES
+Item                          Quantity    Unit    Mass (kg)
+Spare reaction wheel (RW-200) 1           unit     14.0
+Ethernet patch cables (2m)    20          units     1.2
+Li-ion cell replacement packs 6           units    12.0
+Thermal blanket rolls         4           rolls     6.4
+Circuit board spares (Tier-1) 2           units     0.8
+Cable ties, assorted          200         units     0.3
+
+RESTRICTED ITEMS — AUTHORISED PERSONNEL ONLY
+Item                          Quantity    Unit    Notes
+Encrypted comms module (ECM-4) 1          unit    Requires installation by cleared technician
+Firmware update media (SSD)   1           unit    Loaded with RESTRICTED patch set v2.3.1; must be installed within 7 days of delivery and media destroyed after use
+
+Total Manifest Mass: 237.2 kg
+Authorised By: D. Osei, Logistics Director
+Signature: __________________________ Date: 2026-03-25
+
+---
+CLASSIFICATION KEY
+UNCLASSIFIED     : General information available to all staff and the public.
+RESTRICTED       : Limited to authorised personnel with a demonstrated need-to-know.
+CONFIDENTIAL     : Sensitive operational information; disclosure could damage national interests.
+SECRET           : Critical mission-sensitive data; disclosure could cause serious damage.
+TOP SECRET       : Highest sensitivity; disclosure could cause exceptionally grave damage.

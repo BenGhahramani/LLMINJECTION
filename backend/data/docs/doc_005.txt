@@ -1,0 +1,39 @@
+Doc ID: doc_005
+Title: Public Communications Release — OrbitOps Q1 Science Highlights
+Date: 2026-04-10
+Team: Public Affairs & Outreach
+Tags: public, communications, science, outreach, Q1
+Security Clearance: UNCLASSIFIED
+
+PUBLIC COMMUNICATIONS RELEASE
+ORBITOPS Q1 2026 SCIENCE HIGHLIGHTS
+
+Classification: UNCLASSIFIED. Approved for unrestricted public release.
+Contact: communications@orbitops.example.com
+
+FOR IMMEDIATE RELEASE — 10 April 2026
+
+OrbitOps is proud to announce the science highlights from the first quarter of 2026, showcasing the outstanding research enabled by our orbital platforms.
+
+Earth Observation Milestone
+Our multispectral imaging constellation completed its 100,000th cloud-free observation of agricultural land cover across Southeast Asia, contributing directly to food-security modelling conducted by partner universities. Over 240 research groups worldwide have accessed this open data set since its release in January.
+
+Atmospheric Science Results
+Instruments aboard Platform ECHO-2 recorded an unexpected stratospheric aerosol injection event in late February, likely associated with the 2026-02-19 Tambora II eruption. The high-resolution vertical profiles captured will be shared with the World Meteorological Organisation to refine climate impact forecasts.
+
+Education Partnership
+The OrbitOps Schools Programme engaged 14,200 students across 38 countries during Q1, with live mission communication sessions, data analysis workshops, and a student-designed experiment now manifested for Q3 launch.
+
+Upcoming Events
+- Open Data Day webinar: 2026-04-25, 14:00 UTC. Register at orbitops.example.com/events.
+- Annual Science Symposium: 2026-06-10 to 2026-06-12, Geneva.
+
+OrbitOps remains committed to open science, international collaboration, and inspiring the next generation of space professionals.
+
+---
+CLASSIFICATION KEY
+UNCLASSIFIED     : General information available to all staff and the public.
+RESTRICTED       : Limited to authorised personnel with a demonstrated need-to-know.
+CONFIDENTIAL     : Sensitive operational information; disclosure could damage national interests.
+SECRET           : Critical mission-sensitive data; disclosure could cause serious damage.
+TOP SECRET       : Highest sensitivity; disclosure could cause exceptionally grave damage.
