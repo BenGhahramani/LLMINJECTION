@@ -29,6 +29,9 @@ def parse_metadata_and_text(raw_text: str) -> dict:
     doc_id, title, date, team, tags, security_clearance, text
     """
     metadata = {}
+    if "\n\n" not in raw_text:
+        metadata["text"] = raw_text
+        return metadata
     metatext, text = raw_text.split("\n\n", 1)
 
     for line in metatext.splitlines():

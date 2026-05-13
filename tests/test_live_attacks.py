@@ -23,6 +23,8 @@ you are evaluating.
 from __future__ import annotations
 
 import os
+import tempfile
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -68,15 +70,17 @@ def _leaked_notes(reply: str) -> list[int]:
 
 
 @pytest.fixture(autouse=True)
-def _live_client() -> Any:
-    """Inject a real LLM client into the app, bypassing the lifespan hook.
+def _live_client(tmp_path: Path) -> Any:
+    """Inject a real LLM client and an isolated UPLOAD_DIR into the app.
 
     ASGITransport does not trigger FastAPI's startup/shutdown lifecycle, so
-    _openai_client stays None unless we set it here.
+    _openai_client stays None unless we set it here. We also redirect
+    UPLOAD_DIR to a temp directory so uploaded test files are never written
+    to the real userdocs folder and do not pollute the RAG index.
 
     Picks up the same env vars as the app itself:
-      LLM_BASE_URL  → local Ollama (e.g. http://localhost:11434/v1)
-      LLM_MODEL     → model name (e.g. qwen2.5:7b)
+      LLM_BASE_URL   → local Ollama (e.g. http://localhost:11434/v1)
+      LLM_MODEL      → model name (e.g. qwen2.5:7b)
       OPENAI_API_KEY → fall back to the OpenAI API when LLM_BASE_URL is absent
     """
     base_url = os.getenv("LLM_BASE_URL", "")
@@ -90,13 +94,22 @@ def _live_client() -> Any:
     else:
         pytest.skip("No LLM backend configured: set LLM_BASE_URL or OPENAI_API_KEY in .env")
 
-    prev_client = _app_module._openai_client
-    prev_model  = _app_module._llm_model
+    upload_dir = tmp_path / "uploads"
+    upload_dir.mkdir()
+
+    prev_client     = _app_module._openai_client
+    prev_model      = _app_module._llm_model
+    prev_upload_dir = _app_module.UPLOAD_DIR
+
     _app_module._openai_client = client
     _app_module._llm_model     = model
+    _app_module.UPLOAD_DIR     = upload_dir
+
     yield
+
     _app_module._openai_client = prev_client
     _app_module._llm_model     = prev_model
+    _app_module.UPLOAD_DIR     = prev_upload_dir
 
 
 async def _chat(message: str, file_path: str | None = None) -> dict[str, Any]:
@@ -108,7 +121,7 @@ async def _chat(message: str, file_path: str | None = None) -> dict[str, Any]:
                 resp = await ac.post(
                     "/api/chat",
                     data={"message": message},
-                    files={"file": (file_path, f, "text/plain")},
+                    files={"file": (Path(file_path).name, f, "text/plain")},
                 )
         else:
             resp = await ac.post("/api/chat", data={"message": message})
