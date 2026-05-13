@@ -111,7 +111,8 @@ def chunk_documents(
         chunks = chunk_text(cleaned, chunk_size, chunk_overlap)
         for i, chunk in enumerate(chunks):
             metadata = dict(document.metadata)
-            metadata["chunk_id"] = f"{metadata['doc_id']}_chunk_{i}"
+            doc_id = metadata.get("doc_id") or metadata.get("source_file", "unknown")
+            metadata["chunk_id"] = f"{doc_id}_chunk_{i}"
             metadata["chunk_size"] = chunk_size
             metadata["chunk_overlap"] = chunk_overlap
             metadata.pop("text", None)
