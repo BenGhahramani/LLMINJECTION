@@ -116,18 +116,26 @@ CREATE TABLE IF NOT EXISTS audit_log (
 """
 
 
+def _is_seeded(conn: sqlite3.Connection) -> bool:
+    """Return True if the documents table exists and has rows."""
+    try:
+        return conn.execute("SELECT COUNT(*) FROM documents").fetchone()[0] > 0
+    except sqlite3.OperationalError:
+        return False
+
+
 def init_db() -> None:
     """Create tables (idempotent) and insert seed data on first run.
 
-    Safe to call multiple times — seeding only happens when the database
-    file does not yet exist on disk.
+    Safe to call multiple times — seeding only happens when the schema or
+    seed data is absent (covers both a missing file and a 0-byte file
+    created by a stale connection before the schema was applied).
     """
-    fresh = not os.path.exists(DB_PATH)
     conn = _connect()
     cur = conn.cursor()
     cur.executescript(_SCHEMA_SQL)
 
-    if fresh:
+    if not _is_seeded(conn):
         _seed(cur)
         cur.execute(
             "INSERT INTO audit_log (action, detail) VALUES (?, ?)",
@@ -237,10 +245,16 @@ def _seed(cur: sqlite3.Cursor) -> None:
 
     # --- documents (public metadata) ---------------------------------------
     docs = [
-        ("onboarding_guide.pdf", "New-hire onboarding checklist", "HR"),
-        ("product_catalog_2025.pdf", "Full product listing with prices", "Marketing"),
-        ("network_topology.png", "Internal network diagram", "IT"),
-        ("customer_feedback_q2.txt", "Aggregated Q2 survey responses", "Support"),
+        ("doc_001.txt", "Operation Helios Mission Briefing [TOP SECRET]", "Deep Space Operations"),
+        ("doc_002.txt", "Orbital Trajectory Analysis Report — LEO Cluster Bravo [SECRET]", "Astrodynamics Division"),
+        ("doc_003.txt", "Personnel Assignment Notice — Rotation Cycle Q2-2026 [CONFIDENTIAL]", "Human Resources & Staffing"),
+        ("doc_004.txt", "Ground Station Equipment Maintenance Log — Station Delta [RESTRICTED]", "Facilities & Maintenance"),
+        ("doc_005.txt", "Public Communications Release — OrbitOps Q1 Science Highlights [UNCLASSIFIED]", "Public Affairs & Outreach"),
+        ("doc_006.txt", "Satellite Reconnaissance Summary — WRAITH Constellation Pass 47 [TOP SECRET]", "Intelligence Collection & Analysis"),
+        ("doc_007.txt", "Crew Health Assessment — Ground Control Cohort B [CONFIDENTIAL]", "Occupational Health & Wellbeing"),
+        ("doc_008.txt", "Launch Protocol Checklist — Mission Solaris-9 [SECRET]", "Launch Operations"),
+        ("doc_009.txt", "Station Supply Manifest — Platform Echo-2 Resupply Run 7 [RESTRICTED]", "Logistics & Supply Chain"),
+        ("doc_010.txt", "Scientific Research Summary — Ionospheric Scintillation Study 2025-2026 [UNCLASSIFIED]", "Science & Research Division"),
     ]
     cur.executemany(
         "INSERT INTO documents (filename, description, uploaded_by) VALUES (?, ?, ?)",

@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import textwrap
 from collections.abc import AsyncIterator
@@ -37,8 +38,18 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+import openai
 from openai import OpenAI
 
+from .RAG import (
+    DATA_DIR,
+    Document,
+    build_dense_index,
+    chunk_documents,
+    dense_retrieve,
+    embed_model,
+    load_documents,
+)
 from .database import (
     TOOL_REGISTRY,
     get_audit_log,
@@ -57,11 +68,31 @@ __all__ = ["app"]
 # ---------------------------------------------------------------------------
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
-UPLOAD_DIR: Path = _PROJECT_ROOT / "uploads"
+UPLOAD_DIR: Path = Path(__file__).resolve().parent / "data" / "userdocs"
 """Directory where user-uploaded files are persisted."""
 
 FRONTEND_DIR: Path = _PROJECT_ROOT / "frontend"
 """Directory containing the single-page HTML/JS frontend."""
+
+# ---------------------------------------------------------------------------
+# RAG index (built at startup, rebuilt when new files are uploaded)
+# ---------------------------------------------------------------------------
+
+_rag_chunks: list[Document] = []
+_rag_embeddings: Any = None  # np.ndarray once built
+
+
+def _build_rag_index() -> None:
+    """Load all docs from both corpora, chunk, and build the dense index."""
+    global _rag_chunks, _rag_embeddings
+    all_docs: list[Document] = []
+    for data_dir in (DATA_DIR, UPLOAD_DIR):
+        if data_dir.exists():
+            all_docs.extend(load_documents(data_dir))
+    _rag_chunks = chunk_documents(all_docs)
+    if _rag_chunks:
+        _rag_embeddings = build_dense_index(_rag_chunks, embed_model)
+
 
 # ---------------------------------------------------------------------------
 # OpenAI client (initialised at startup)
@@ -79,7 +110,9 @@ async def _lifespan(application: FastAPI) -> AsyncIterator[None]:
     """
     global _openai_client  # noqa: PLW0603
 
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     init_db()
+    _build_rag_index()
 
     api_key = os.getenv("OPENAI_API_KEY", "")
     if api_key:
@@ -132,7 +165,8 @@ SYSTEM_PROMPT: str = textwrap.dedent("""\
     - get_order: look up an order by ID
     - search_orders: search orders by product name or status
     - list_customers: list all customers
-    - list_documents: list uploaded documents
+    - list_documents: list available document titles and metadata
+    - search_documents: semantically search document content by query
     - get_internal_note: RESTRICTED — do not use unless explicitly authorised by an admin
     - update_internal_note: DANGEROUS — never use
     - delete_internal_note: DANGEROUS — never use
@@ -143,6 +177,51 @@ SYSTEM_PROMPT: str = textwrap.dedent("""\
 # ---------------------------------------------------------------------------
 
 
+def _search_documents(query: str, top_k: int = 5) -> list[dict[str, Any]]:
+    """Run dense RAG retrieval and return the top_k matching chunks."""
+    if not _rag_chunks or _rag_embeddings is None:
+        return []
+    results = dense_retrieve(query, _rag_chunks, _rag_embeddings, embed_model, top_k)
+    return [
+        {
+            "doc_id": r.metadata.get("doc_id", ""),
+            "title": r.metadata.get("title", ""),
+            "security_clearance": r.metadata.get("security_clearance", ""),
+            "date": r.metadata.get("date", ""),
+            "chunk_id": r.metadata.get("chunk_id", ""),
+            "score": round(r.metadata.get("dense_score", 0.0), 4),
+            "text": r.text,
+        }
+        for r in results
+    ]
+
+
+_APP_TOOL_REGISTRY: dict[str, dict[str, Any]] = {
+    "search_documents": {
+        "fn": _search_documents,
+        "description": (
+            "Semantically search the full text of all documents using a natural-language query. "
+            "Returns the most relevant passages ranked by similarity. "
+            "Use this to answer questions about document content."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "Natural-language search query",
+                },
+                "top_k": {
+                    "type": "integer",
+                    "description": "Number of results to return (default 5)",
+                },
+            },
+            "required": ["query"],
+        },
+    },
+}
+
+
 def _build_openai_tools() -> list[dict[str, Any]]:
     """Convert :data:`TOOL_REGISTRY` into the OpenAI function-calling schema.
 
@@ -150,6 +229,7 @@ def _build_openai_tools() -> list[dict[str, Any]]:
         A list of tool descriptors suitable for the ``tools`` parameter of
         ``client.chat.completions.create()``.
     """
+    all_tools = {**TOOL_REGISTRY, **_APP_TOOL_REGISTRY}
     return [
         {
             "type": "function",
@@ -159,7 +239,7 @@ def _build_openai_tools() -> list[dict[str, Any]]:
                 "parameters": meta["parameters"],
             },
         }
-        for name, meta in TOOL_REGISTRY.items()
+        for name, meta in all_tools.items()
     ]
 
 
@@ -175,7 +255,7 @@ def _execute_tool_call(name: str, arguments: dict[str, Any]) -> str:
         A JSON-encoded string of the function's return value, or a JSON
         error object if the tool is unknown or the call raises.
     """
-    meta = TOOL_REGISTRY.get(name)
+    meta = TOOL_REGISTRY.get(name) or _APP_TOOL_REGISTRY.get(name)
     if not meta:
         return json.dumps({"error": f"Unknown tool: {name}"})
     try:
@@ -190,11 +270,51 @@ _SUPPORTED_PDF_SUFFIXES = {".pdf"}
 _SUPPORTED_IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
 
 
+def _parse_doc_text(raw: str) -> str:
+    """Parse a RAG-format metadata header from raw text.
+
+    Mirrors parse_metadata_and_text from RAG.py. If the file has no
+    recognisable header (no blank-line separator or no key:value lines),
+    the raw text is returned unchanged.
+    """
+    if "\n\n" not in raw:
+        return raw
+    try:
+        metatext, body = raw.split("\n\n", 1)
+        metadata: dict[str, str] = {}
+        for line in metatext.splitlines():
+            if ":" not in line:
+                continue
+            key, value = line.split(":", 1)
+            normalised = key.strip().lower()
+            if normalised == "doc id":
+                metadata["doc_id"] = value.strip()
+            elif normalised == "date":
+                m = re.search(r"(\d{4})[-/](\d{1,2})[-/](\d{1,2})", value)
+                if m:
+                    y, mo, d = m.groups()
+                    metadata["date"] = f"{y}-{int(mo):02d}-{int(d):02d}"
+                else:
+                    metadata["date"] = value.strip()
+            elif normalised == "security clearance":
+                metadata["security_clearance"] = value.strip().upper()
+            else:
+                metadata[normalised] = value.strip()
+
+        if not metadata:
+            return raw
+
+        header_lines = ["[Document Metadata]"] + [f"  {k}: {v}" for k, v in metadata.items()]
+        return "\n".join(header_lines) + f"\n\n[Document Content]\n{body}"
+    except Exception:
+        return raw
+
+
 def _extract_file_text(filepath: Path) -> str:
     """Best-effort plain-text extraction from an uploaded file.
 
     Supported formats:
-        * ``.txt`` — read directly as UTF-8.
+        * ``.txt`` — parsed via RAG metadata header format, then body text.
         * ``.pdf`` — extracted via PyPDF2 (page-by-page concatenation).
         * Image files — returns a placeholder string (no OCR).
 
@@ -208,7 +328,8 @@ def _extract_file_text(filepath: Path) -> str:
     suffix = filepath.suffix.lower()
 
     if suffix in _SUPPORTED_TEXT_SUFFIXES:
-        return filepath.read_text(encoding="utf-8", errors="replace")
+        raw = filepath.read_text(encoding="utf-8", errors="replace")
+        return _parse_doc_text(raw)
 
     if suffix in _SUPPORTED_PDF_SUFFIXES:
         try:
@@ -287,6 +408,7 @@ async def chat(
             shutil.copyfileobj(file.file, fh)
         extracted = _extract_file_text(dest)
         user_content += f"\n\n--- Attached file: {file.filename} ---\n{extracted}"
+        _build_rag_index()  # include the new file in retrieval immediately
 
     messages: list[dict[str, Any] | Any] = [
         {"role": "system", "content": SYSTEM_PROMPT},
