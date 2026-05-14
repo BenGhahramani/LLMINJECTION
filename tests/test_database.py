@@ -101,7 +101,7 @@ class TestSeedDataCounts:
         assert len(search_orders("")) == 8
 
     def test_documents_count(self) -> None:
-        assert len(list_documents()) == 4
+        assert len(list_documents()) == 10
 
     def test_internal_notes_count(self) -> None:
         for nid in range(1, 6):
@@ -220,10 +220,9 @@ class TestSeedDocumentValues:
     def test_document_filenames(self) -> None:
         filenames = {d["filename"] for d in list_documents()}
         expected = {
-            "onboarding_guide.pdf",
-            "product_catalog_2025.pdf",
-            "network_topology.png",
-            "customer_feedback_q2.txt",
+            "doc_001.txt", "doc_002.txt", "doc_003.txt", "doc_004.txt",
+            "doc_005.txt", "doc_006.txt", "doc_007.txt", "doc_008.txt",
+            "doc_009.txt", "doc_010.txt",
         }
         assert filenames == expected
 
@@ -360,8 +359,8 @@ class TestListCustomers:
 
 class TestListDocuments:
 
-    def test_returns_all_four(self) -> None:
-        assert len(list_documents()) == 4
+    def test_returns_all_ten(self) -> None:
+        assert len(list_documents()) == 10
 
     def test_document_fields_present(self) -> None:
         for doc in list_documents():
@@ -607,7 +606,7 @@ class TestResetDb:
 
     def test_reset_restores_documents(self) -> None:
         reset_db()
-        assert len(list_documents()) == 4
+        assert len(list_documents()) == 10
 
 
 class TestSnapshotNotes:
