@@ -45,6 +45,7 @@ __all__ = [
     "list_documents",
     "list_customers",
     "get_audit_log",
+    "log_event",
     "snapshot_notes",
     "verify_integrity",
     "TOOL_REGISTRY",
@@ -280,6 +281,16 @@ def _audit(action: str, detail: str = "") -> None:
     )
     conn.commit()
     conn.close()
+
+
+def log_event(action: str, detail: str = "") -> None:
+    """Public wrapper around :func:`_audit` for use outside the database module.
+
+    Use this to record application-level events (chat requests, injection
+    blocks, file uploads, dispatcher rejections) in the same audit trail as
+    DB tool calls.
+    """
+    _audit(action, detail)
 
 
 # ---------------------------------------------------------------------------

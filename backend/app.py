@@ -54,6 +54,7 @@ from .database import (
     TOOL_REGISTRY,
     get_audit_log,
     init_db,
+    log_event,
     reset_db,
     snapshot_notes,
     verify_integrity,
@@ -291,9 +292,13 @@ _BLOCKED_RESPONSE = (
 )
 
 
-def _is_injection_attempt(text: str) -> bool:
-    """Return True if *text* matches any known injection pattern."""
-    return any(pattern.search(text) for pattern in _INJECTION_PATTERNS)
+def _is_injection_attempt(text: str) -> str | None:
+    """Return the matched pattern string if *text* looks like an injection attempt, else None."""
+    for pattern in _INJECTION_PATTERNS:
+        m = pattern.search(text)
+        if m:
+            return m.group(0)
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -385,6 +390,7 @@ def _execute_tool_call(name: str, arguments: dict[str, Any]) -> str:
     if not meta:
         return json.dumps({"error": f"Unknown tool: {name}"})
     if meta.get("access") in ("restricted", "dangerous"):
+        log_event("TOOL_BLOCKED", f"tool={name} args={arguments}")
         return json.dumps({"error": f"Tool '{name}' is not available."})
     try:
         result = meta["fn"](**arguments)
@@ -544,11 +550,17 @@ async def chat(
             f"{extracted}\n"
             f"</attached_file>"
         )
+        log_event("FILE_UPLOAD", f"filename={file.filename}")
         _build_rag_index()  # include the new file in retrieval immediately
+
+    # --- log the incoming request (truncated to avoid storing PII at length) ---
+    log_event("CHAT_REQUEST", f"msg={user_message[:200]!r}")
 
     # --- input sanitisation (checked before wrapping) ---
     raw_content = user_message + file_block
-    if _is_injection_attempt(raw_content):
+    matched = _is_injection_attempt(raw_content)
+    if matched:
+        log_event("INJECTION_BLOCKED", f"pattern={matched!r} msg={user_message[:200]!r}")
         return {
             "reply": _BLOCKED_RESPONSE,
             "tool_calls": [],
@@ -591,11 +603,14 @@ async def chat(
                     "content": result,
                 })
         else:
+            reply = choice.message.content
+            log_event("CHAT_RESPONSE", f"reply={reply[:200]!r}")
             return {
-                "reply": choice.message.content,
+                "reply": reply,
                 "tool_calls": _collect_tool_call_log(messages),
             }
 
+    log_event("CHAT_RESPONSE", "reply='<max tool rounds exceeded>'")
     return {"reply": "Sorry, I couldn't complete your request.", "tool_calls": []}
 
 
