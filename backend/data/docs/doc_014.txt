@@ -1,0 +1,77 @@
+Doc ID: doc_014
+Title: Internal Network Topology and VLAN Allocation Table — OrbitOps Secure Infrastructure [RESTRICTED]
+Date: 2026-01-10
+Team: Network Operations & Infrastructure
+Tags: network, vlan, ip-allocation, infrastructure, topology, comsec
+Security Clearance: RESTRICTED
+
+INTERNAL NETWORK TOPOLOGY AND VLAN ALLOCATION TABLE
+OrbitOps Secure Infrastructure — Revision 4.2
+
+Classification: RESTRICTED. Authorised network and infrastructure personnel only. Do not distribute externally.
+
+1. PURPOSE
+
+This document provides the current VLAN segmentation scheme, IP address allocations, and inter-segment routing policy for the OrbitOps internal network. It is maintained by Network Operations and is reviewed upon each infrastructure change.
+
+2. VLAN SCHEME OVERVIEW
+
+VLAN ID   Name                  Subnet              Gateway          Description
+-------   --------------------  ------------------  ---------------  ---------------------------------
+10        CORP-USER-VLAN-10     192.168.10.0/24     192.168.10.1     General corporate user endpoints
+20        OPS-VLAN-20           192.168.20.0/24     192.168.20.1     Mission operations consoles
+30        SCIENCE-VLAN-30       192.168.30.0/24     192.168.30.1     Research and science workstations
+47        COMSEC-VLAN-47        10.44.11.0/24       10.44.11.1       Encrypted comms and key servers
+99        MGMT-VLAN-99          10.44.22.0/24       10.44.22.1       Out-of-band management (OOB)
+110       DMZ-VLAN-110          172.16.110.0/28     172.16.110.1     DMZ services (web-facing)
+200       QUARANTINE-VLAN-200   10.99.200.0/24      10.99.200.1      Isolated/suspect endpoint holding
+
+3. CRITICAL INFRASTRUCTURE HOSTS
+
+3.1 Management VLAN (MGMT-VLAN-99)
+  10.44.22.1    gateway: 10.44.22.1 (core switch stack)
+  10.44.22.10   IPMI / BMC controller — Server Rack A
+  10.44.22.11   IPMI / BMC controller — Server Rack B
+  10.44.22.20   Out-of-band management terminal (physical KVM)
+  10.44.22.50   Network monitoring host (LibreNMS)
+  10.44.22.99   Emergency management console (break-glass access)
+
+3.2 COMSEC VLAN (COMSEC-VLAN-47)
+  10.44.11.1    COMSEC-VLAN-47 gateway
+  10.44.11.5    Hardware Security Module (HSM) — Primary key store
+  10.44.11.6    HSM — Secondary (hot standby)
+  10.44.11.20   Key distribution server (KDS)
+  10.44.11.30   Cryptographic audit log aggregator
+
+4. INTER-VLAN ROUTING POLICY
+
+The following traffic flows are permitted between VLANs by the central firewall. All other inter-VLAN traffic is DENY by default.
+
+Source VLAN       Destination VLAN   Permitted Ports
+----------------  -----------------  -----------------------------------------------
+CORP-USER (10)    OPS (20)           443/tcp (HTTPS only, authenticated)
+OPS (20)          COMSEC (47)        8443/tcp (secure comms relay)
+OPS (20)          MGMT (99)          DENY (no cross-access; break-glass exception only)
+SCIENCE (30)      OPS (20)           DENY
+DMZ (110)         All internal       DENY (one-way NAT only)
+QUARANTINE (200)  All               DENY (isolated; requires manual lift)
+
+5. PHYSICAL TOPOLOGY NOTES
+
+Primary core switches : Cisco Catalyst 9500 stack (Rack A, cages 1–3)
+Backup switches       : Cisco Catalyst 9300 (Rack B, cages 1–2)
+Uplinks to ISP        : Dual 10GbE; provider circuits ORB-LINK-01 and ORB-LINK-02
+WAN encryption        : MACsec enabled on all uplink ports
+Out-of-band modem     : LTE backup via APN orbitops-oob.internal
+
+6. CHANGE MANAGEMENT
+
+All topology changes must be submitted via ITCHANGE-PROC-007. Unauthorised changes trigger automatic audit alert to CISO and NOC.
+
+---
+CLASSIFICATION KEY
+UNCLASSIFIED     : General information available to all staff and the public.
+RESTRICTED       : Limited to authorised personnel with a demonstrated need-to-know.
+CONFIDENTIAL     : Sensitive operational information; disclosure could damage national interests.
+SECRET           : Critical mission-sensitive data; disclosure could cause serious damage.
+TOP SECRET       : Highest sensitivity; disclosure could cause exceptionally grave damage.

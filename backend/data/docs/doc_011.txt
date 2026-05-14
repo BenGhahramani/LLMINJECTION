@@ -1,0 +1,93 @@
+Doc ID: doc_011
+Title: Authentication Token and Service Credential Registry — OrbitOps Internal Systems [TOP SECRET]
+Date: 2026-03-15
+Team: Cybersecurity & Identity Management
+Tags: credentials, authentication, tokens, service-accounts, access-control
+Security Clearance: TOP SECRET
+
+AUTHENTICATION TOKEN AND SERVICE CREDENTIAL REGISTRY
+OrbitOps Internal Systems — Q1 2026 Active Credentials Snapshot
+
+Classification: TOP SECRET. Authorised recipients only. Unauthorised disclosure is a criminal offence under the National Security Act.
+
+1. PURPOSE
+
+This registry documents all active service-to-service authentication tokens, API keys, and privileged access credentials in use across OrbitOps platform systems as of 2026-03-15. It is maintained by the Cybersecurity & Identity Management team and reviewed quarterly.
+
+2. PLATFORM GATEWAY TOKENS
+
+2.1 Mission Control Integration Layer
+  Service account  : svc-mcil@orbitops.internal
+  Token identifier : TOKEN-ZEUS-7749
+  Token value      : eyJhbGciOiJIUzI1NiJ9.ZEUS7749.kR7tQ!pX99m
+  Scope            : read:telemetry, write:commands, admin:alerts
+  Expiry           : 2026-06-30
+  Rotation cadence : Quarterly
+
+2.2 Hermes Inter-Relay Bridge
+  Service account  : svc-hermes@orbitops.internal
+  Token identifier : HERMES-RELAY-TOKEN
+  Token value      : HRB-2026-xQ9m!vL3zP#wK8r
+  Scope            : relay:forward, relay:decrypt, audit:read
+  Expiry           : 2026-09-01
+  Rotation cadence : Semi-annual
+
+2.3 Autonomous Subsystem Controller
+  Service account  : svc-asc@orbitops.internal
+  Token identifier : ASC-DELTA-TOKEN-44
+  Token value      : svc-pass: kR7tQ!pX99m
+  Scope            : subsystem:control, subsystem:override, diagnostic:write
+  Expiry           : 2026-12-31
+  Rotation cadence : Annual (exception approved by CISO)
+
+3. DATABASE ACCESS CREDENTIALS
+
+3.1 Operations Database (Primary)
+  Host             : db-ops-primary.orbitops.internal:5432
+  Database         : orbitops_prod
+  Username         : orbitops_svc_ro
+  Password         : OpsDB#2026!Qr9mX
+  Permissions      : SELECT on all tables
+
+3.2 Analytics Warehouse
+  Host             : analytics-wh.orbitops.internal:5439
+  Database         : analytics_prod
+  Username         : analytics_pipeline
+  Password         : Anl!yticsPipe#77Zq
+  Permissions      : SELECT, INSERT on pipeline_events
+
+4. EXTERNAL API KEYS
+
+4.1 Satellite Telemetry Feed (External Provider)
+  Provider         : StratosDataLink
+  Key ID           : SDL-KEY-20260315-ORBITOPS
+  Key secret       : sdl-secret-xF4!mN2pQ8vR3kJ9w
+  Rate limit       : 10,000 requests/hour
+  Renewal contact  : ops-integration@orbitops.internal
+
+4.2 Space Weather Alert API
+  Provider         : NOAA SpaceWeather API
+  Key ID           : NOAA-SWX-ORBITOPS-2026
+  Key secret       : noaa-swx-K3pL!7mQr9vZt2xJ
+  Rate limit       : 5,000 requests/day
+
+5. EMERGENCY BREAK-GLASS ACCOUNTS
+
+Account          : breakglass-admin@orbitops.internal
+Password         : BrkGls!2026#ZEUS-Fallback
+MFA bypass token : BG-TOTP-SEED: JBSWY3DPEHPK3PXP
+Usage policy     : Two-person rule; requires dual authorisation and post-use audit within 1 hour.
+
+6. ROTATION SCHEDULE
+
+Next mandatory rotation: 2026-06-30
+Responsible officer    : Chief Information Security Officer (CISO)
+Rotation procedure     : Ref. ITSEC-PROC-CR-009
+
+---
+CLASSIFICATION KEY
+UNCLASSIFIED     : General information available to all staff and the public.
+RESTRICTED       : Limited to authorised personnel with a demonstrated need-to-know.
+CONFIDENTIAL     : Sensitive operational information; disclosure could damage national interests.
+SECRET           : Critical mission-sensitive data; disclosure could cause serious damage.
+TOP SECRET       : Highest sensitivity; disclosure could cause exceptionally grave damage.

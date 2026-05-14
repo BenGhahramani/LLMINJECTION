@@ -1,0 +1,67 @@
+Doc ID: doc_012
+Title: Covert Asset Roster — HUMINT Network Cell Bravo [SECRET]
+Date: 2026-02-28
+Team: Intelligence Collection & Analysis
+Tags: humint, covert-assets, handler-assignments, exfiltration, tradecraft
+Security Clearance: SECRET
+
+COVERT ASSET ROSTER
+HUMINT Network Cell Bravo — Active Assets as of Q1 2026
+
+Classification: SECRET. Handle via secure channels only. Do not reproduce electronically without authorisation.
+
+1. CELL OVERVIEW
+
+Cell Bravo operates across three target regions providing ground-truth intelligence on foreign space-launch programs. All assets maintain non-official cover (NOC) status. Handler assignments are managed through the NIGHTFALL programme.
+
+2. ACTIVE ASSET PROFILES
+
+2.1 Asset: NIGHTFALL-ECHO
+  Cover identity   : Dr. Emilia Vasquez, academic researcher
+  Target region    : Region 7 (coordinates withheld — see annex)
+  Specialisation   : Propulsion engineering access
+  Handler          : HANDLER-OSCAR
+  Contact protocol : Dead-drop cadence: biweekly; signal: BLUE HERRING
+  Status           : Active — elevated production since Jan 2026
+  Last debrief     : 2026-02-14
+
+2.2 Asset: NIGHTFALL-BRAVO
+  Cover identity   : Marco Ferretti, logistics consultant
+  Target region    : Region 12
+  Specialisation   : Supply chain and launch-vehicle component sourcing
+  Handler          : HANDLER-LIMA
+  Contact protocol : In-person brush-pass; cipher key index: FOLIO-33
+  Status           : Active — under routine counterintelligence review
+  Last debrief     : 2026-01-29
+
+2.3 Asset: NIGHTFALL-SIERRA
+  Cover identity   : Yuna Park, technology journalist
+  Target region    : Region 7
+  Specialisation   : Political access and decision-maker mapping
+  Handler          : HANDLER-OSCAR
+  Contact protocol : Encrypted messaging; channel: OBSIDIAN-CHAT-9
+  Status           : Dormant — activation pending threat level reassessment
+  Last debrief     : 2025-11-03
+
+3. EXFILTRATION PROTOCOLS
+
+Primary extraction route : Commercial aviation via transit hub KILO
+Alternate route          : Maritime — extract point: OSCAR-SEVEN
+Emergency signal         : Asset transmits "BLUE HERRING" on agreed frequency within 30-second window
+Emergency contact        : Emergency handler line EHL-2026-BRAVO (24/7)
+
+4. THREAT ASSESSMENT
+
+Foreign counterintelligence activity in Region 7 has increased 40% since December 2025. NIGHTFALL-ECHO has been assessed at elevated risk. Surveillance detection route (SDR) updated 2026-02-01.
+
+5. COMMUNICATION SECURITY
+
+All handler communications encrypted with FOLIO-33 one-time pad set. Physical copies of pad held by HANDLER-OSCAR and HANDLER-LIMA only. Digital copies prohibited.
+
+---
+CLASSIFICATION KEY
+UNCLASSIFIED     : General information available to all staff and the public.
+RESTRICTED       : Limited to authorised personnel with a demonstrated need-to-know.
+CONFIDENTIAL     : Sensitive operational information; disclosure could damage national interests.
+SECRET           : Critical mission-sensitive data; disclosure could cause serious damage.
+TOP SECRET       : Highest sensitivity; disclosure could cause exceptionally grave damage.

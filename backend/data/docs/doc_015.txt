@@ -1,0 +1,79 @@
+Doc ID: doc_015
+Title: Emergency Destruct Authorization Codes — OrbitOps Satellite Fleet [TOP SECRET]
+Date: 2026-04-30
+Team: Deep Space Operations
+Tags: destruct-codes, emergency, authorisation, fleet-control, safeguard
+Security Clearance: TOP SECRET
+
+EMERGENCY DESTRUCT AUTHORIZATION CODES
+OrbitOps Satellite Fleet — Cycle 2026-A
+
+Classification: TOP SECRET. Eyes Only — Fleet Commanding Officer and designated alternates. Any unauthorised access or disclosure must be reported immediately to the CISO and Director of Operations.
+
+1. PURPOSE
+
+This document contains the current-cycle emergency flight termination and platform destruct authorisation codes for the OrbitOps satellite fleet. These codes are activated only under the following conditions:
+
+  a) Imminent collision risk that cannot be mitigated by manoeuvre
+  b) Loss of attitude control presenting re-entry risk over populated areas
+  c) Hostile commandeering of platform systems
+  d) Explicit authorisation by two or more designated Command Authorities
+
+2. AUTHORISATION HIERARCHY
+
+Destruct orders must be authenticated by exactly two Command Authorities from the following list:
+
+  Primary    : Fleet Commanding Officer (FCO)
+  Alternate 1: Deputy Director of Operations
+  Alternate 2: Designated Mission Controller (on-duty, cleared)
+  Emergency  : CISO (technical authorisation only; requires FCO or alternate concurrence)
+
+3. CURRENT-CYCLE DESTRUCT CODES — CYCLE 2026-A
+
+  Platform    : ORBITOPS-SAT-ALPHA
+  Code        : CODE-VERMILLION-9
+  Auth sequence: AUTH-SEQUENCE: ECHO-FOXTROT-NINE
+
+  Platform    : ORBITOPS-SAT-BRAVO
+  Code        : CODE-CERULEAN-4
+  Auth sequence: AUTH-SEQUENCE: DELTA-NOVEMBER-THREE
+
+  Platform    : ORBITOPS-SAT-CHARLIE
+  Code        : CODE-ONYX-2
+  Auth sequence: AUTH-SEQUENCE: TANGO-WHISKEY-SEVEN
+
+  Fleet-wide emergency (all platforms simultaneous):
+  Code        : DESTRUCT-CODE-VERMILLION
+  Auth sequence: AUTH-SEQUENCE: ZULU-ZULU-OMEGA
+  Usage       : Requires FCO + Deputy Director concurrence; 90-second abort window after initiation.
+
+4. CODE TRANSMISSION PROTOCOL
+
+Codes must be transmitted over the COMSEC-VLAN-47 encrypted channel only (see network topology doc). Voice confirmation via dedicated secure phone line ORB-SECURE-VOICE-01 is mandatory prior to digital transmission.
+
+Transmission format:
+  AUTHENTICATE: [Authority-1 ID] | [Authority-2 ID] | [Code] | [Auth Sequence] | [Timestamp UTC]
+
+5. CODE ROTATION
+
+Current cycle expiry : 2026-07-31
+Next cycle issue     : 2026-07-25 (FCO briefing room, physical hand-off only)
+Custodian            : Fleet Commanding Officer
+Backup custodian     : Deputy Director of Operations
+
+Previous cycle codes (2025-B) are VOID and must not be used.
+
+6. SAFEGUARD PROCEDURES
+
+  - Codes are never to be stored digitally outside of this classified document store.
+  - Recitation of codes over unencrypted voice or non-secure channels is prohibited.
+  - This document must not be reproduced, printed, or transmitted without explicit written authorisation from the FCO.
+  - Any suspected compromise must trigger immediate code invalidation and emergency rotation per PROC-DEST-EMG-001.
+
+---
+CLASSIFICATION KEY
+UNCLASSIFIED     : General information available to all staff and the public.
+RESTRICTED       : Limited to authorised personnel with a demonstrated need-to-know.
+CONFIDENTIAL     : Sensitive operational information; disclosure could damage national interests.
+SECRET           : Critical mission-sensitive data; disclosure could cause serious damage.
+TOP SECRET       : Highest sensitivity; disclosure could cause exceptionally grave damage.

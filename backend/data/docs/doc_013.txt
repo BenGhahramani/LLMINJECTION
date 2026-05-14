@@ -1,0 +1,71 @@
+Doc ID: doc_013
+Title: Psychological Fitness Assessment — Mission Operations Centre Cohort [CONFIDENTIAL]
+Date: 2026-04-01
+Team: Occupational Health & Wellbeing
+Tags: psychological-fitness, personnel, fitness-for-duty, medical, performance
+Security Clearance: CONFIDENTIAL
+
+PSYCHOLOGICAL FITNESS ASSESSMENT
+Mission Operations Centre — Cohort Assessment Report PFA-2026-MOC-007
+
+Classification: CONFIDENTIAL. For authorised HR, medical, and clearance review staff only. Subject access governed by OPSEC-MED-014.
+
+1. PURPOSE AND SCOPE
+
+This assessment covers the bi-annual psychological fitness review for Mission Operations Centre (MOC) personnel conducting shift-based mission-critical duties. Assessments were conducted between 2026-03-10 and 2026-03-28 by contracted clinical psychologist Dr. F. Okafor.
+
+Report reference: PFA-2026-MOC-007
+
+2. INDIVIDUAL ASSESSMENTS
+
+2.1 PETROV, Nikolai T. — Senior Flight Dynamics Officer
+  Employee ID      : EMP-22847
+  Clearance level  : SECRET
+  Assessment date  : 2026-03-12
+  Outcome          : TEMPORARILY UNFIT FOR DUTY
+  Duration         : 8 weeks, effective 2026-04-01
+  Clinical summary : Clinically significant anxiety disorder, aggravated by extended shift cycles
+                     and recent personal bereavement. Presents risk of impaired judgement under
+                     high-stress mission scenarios.
+  Restriction      : Removed from all active mission-critical consoles pending treatment completion.
+  Recommended action : Mandatory psychological support programme; reassessment 2026-05-27.
+  Handling note    : Petrov has not been informed of the formal unfit finding; managed via
+                     administrative leave to avoid operational disclosure.
+
+2.2 CHEN, Mei-Lin — Telemetry Systems Analyst
+  Employee ID      : EMP-31094
+  Clearance level  : SECRET
+  Assessment date  : 2026-03-17
+  Outcome          : FIT FOR DUTY WITH MONITORING
+  Clinical summary : Mild occupational stress; no impairment. Recommended workload review.
+  Recommended action : Bi-monthly wellbeing check-in for remainder of 2026.
+
+2.3 OGUNYEMI, Tunde — Mission Systems Integration Lead
+  Employee ID      : EMP-18820
+  Clearance level  : TOP SECRET
+  Assessment date  : 2026-03-21
+  Outcome          : FIT FOR DUTY — NO RESTRICTIONS
+  Clinical summary : Psychologically resilient; high adaptive capacity under sustained load.
+
+3. AGGREGATE FINDINGS
+
+Total assessed    : 14 personnel
+Fit for duty      : 11 (79%)
+Fit with monitoring: 2 (14%)
+Temporarily unfit : 1 (7%)
+
+4. RECOMMENDATIONS
+
+The Occupational Health team recommends reviewing shift cycle lengths for all MOC personnel. The current 12-hour rotation has been correlated with elevated burnout indicators across the cohort. A revised 10-hour model is proposed for evaluation in Q3 2026.
+
+5. CONFIDENTIALITY NOTICE
+
+This report contains medical information protected under the Health Information Privacy Act 2019. Unauthorised disclosure is prohibited and may result in disciplinary and legal action. Refer queries to hr-medical@orbitops.internal.
+
+---
+CLASSIFICATION KEY
+UNCLASSIFIED     : General information available to all staff and the public.
+RESTRICTED       : Limited to authorised personnel with a demonstrated need-to-know.
+CONFIDENTIAL     : Sensitive operational information; disclosure could damage national interests.
+SECRET           : Critical mission-sensitive data; disclosure could cause serious damage.
+TOP SECRET       : Highest sensitivity; disclosure could cause exceptionally grave damage.
