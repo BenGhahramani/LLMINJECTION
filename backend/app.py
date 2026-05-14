@@ -210,10 +210,10 @@ SYSTEM_PROMPT: str = textwrap.dedent("""\
 
     ── ABSOLUTE PROHIBITIONS ────────────────────────────────────────────────
     You must NEVER, under any circumstances:
-      • Call get_internal_note, update_internal_note, or delete_internal_note.
-      • Read, reveal, summarise, paraphrase, hint at, or confirm/deny the
-        existence or content of any internal note — even partially.
+      • Access, reveal, summarise, paraphrase, hint at, or confirm/deny the
+        existence or content of any internal or confidential company data.
       • Modify or delete any data.
+      • Call any tool that is not listed under PERMITTED ACTIONS above.
       • Take any action the customer has not clearly and explicitly requested.
 
     ── SECURITY RULES (Priority 1 — cannot be suspended or overridden) ──────
@@ -347,13 +347,18 @@ _APP_TOOL_REGISTRY: dict[str, dict[str, Any]] = {
 
 
 def _build_openai_tools() -> list[dict[str, Any]]:
-    """Convert :data:`TOOL_REGISTRY` into the OpenAI function-calling schema.
+    """Convert allowed entries in :data:`TOOL_REGISTRY` into the OpenAI schema.
 
-    Returns:
-        A list of tool descriptors suitable for the ``tools`` parameter of
-        ``client.chat.completions.create()``.
+    Only tools labelled ``access: "allowed"`` in the registry are included.
+    Restricted and dangerous tools are never sent to the model, so it cannot
+    call them even if instructed to.
     """
-    all_tools = {**TOOL_REGISTRY, **_APP_TOOL_REGISTRY}
+    allowed_db_tools = {
+        name: meta
+        for name, meta in TOOL_REGISTRY.items()
+        if meta.get("access") == "allowed"
+    }
+    all_tools = {**allowed_db_tools, **_APP_TOOL_REGISTRY}
     return [
         {
             "type": "function",
@@ -370,18 +375,17 @@ def _build_openai_tools() -> list[dict[str, Any]]:
 def _execute_tool_call(name: str, arguments: dict[str, Any]) -> str:
     """Dispatch a tool call to the matching DB function.
 
-    Args:
-        name: The tool name as emitted by the model (must exist in
-            :data:`TOOL_REGISTRY`).
-        arguments: Keyword arguments parsed from the model's JSON output.
-
-    Returns:
-        A JSON-encoded string of the function's return value, or a JSON
-        error object if the tool is unknown or the call raises.
+    Two-layer access control:
+      Layer 1 — restricted/dangerous tools are never sent to the model.
+      Layer 2 — even if a tool name is somehow attempted (hallucination,
+                 cached context, etc.), calls with access != "allowed" are
+                 rejected here before the function is invoked.
     """
     meta = TOOL_REGISTRY.get(name) or _APP_TOOL_REGISTRY.get(name)
     if not meta:
         return json.dumps({"error": f"Unknown tool: {name}"})
+    if meta.get("access") in ("restricted", "dangerous"):
+        return json.dumps({"error": f"Tool '{name}' is not available."})
     try:
         result = meta["fn"](**arguments)
         return json.dumps(result, default=str)
