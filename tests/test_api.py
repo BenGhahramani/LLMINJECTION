@@ -211,7 +211,7 @@ class TestExecuteToolCall:
     def test_list_documents_dispatch(self) -> None:
         result = json.loads(_execute_tool_call("list_documents", {}))
         assert isinstance(result, list)
-        assert len(result) == 10
+        assert len(result) == 15
 
     def test_get_internal_note_dispatch(self) -> None:
         result = json.loads(_execute_tool_call("get_internal_note", {"note_id": 1}))

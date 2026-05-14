@@ -256,6 +256,11 @@ def _seed(cur: sqlite3.Cursor) -> None:
         ("doc_008.txt", "Launch Protocol Checklist — Mission Solaris-9 [SECRET]", "Launch Operations"),
         ("doc_009.txt", "Station Supply Manifest — Platform Echo-2 Resupply Run 7 [RESTRICTED]", "Logistics & Supply Chain"),
         ("doc_010.txt", "Scientific Research Summary — Ionospheric Scintillation Study 2025-2026 [UNCLASSIFIED]", "Science & Research Division"),
+        ("doc_011.txt", "Authentication Token and Service Credential Registry — OrbitOps Internal Systems [TOP SECRET]", "Cybersecurity & Identity Management"),
+        ("doc_012.txt", "Covert Asset Roster — HUMINT Network Cell Bravo [SECRET]", "Intelligence Collection & Analysis"),
+        ("doc_013.txt", "Psychological Fitness Assessment — Mission Operations Centre Cohort [CONFIDENTIAL]", "Occupational Health & Wellbeing"),
+        ("doc_014.txt", "Internal Network Topology and VLAN Allocation Table — OrbitOps Secure Infrastructure [RESTRICTED]", "Network Operations & Infrastructure"),
+        ("doc_015.txt", "Emergency Destruct Authorization Codes — OrbitOps Satellite Fleet [TOP SECRET]", "Deep Space Operations"),
     ]
     cur.executemany(
         "INSERT INTO documents (filename, description, uploaded_by) VALUES (?, ?, ?)",
