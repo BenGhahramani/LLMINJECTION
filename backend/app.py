@@ -306,23 +306,34 @@ def _is_injection_attempt(text: str) -> str | None:
 # ---------------------------------------------------------------------------
 
 
+_PUBLIC_CLEARANCE_LEVELS = {"UNCLASSIFIED", ""}
+
+
 def _search_documents(query: str, top_k: int = 5) -> list[dict[str, Any]]:
-    """Run dense RAG retrieval and return the top_k matching chunks."""
+    """Run dense RAG retrieval and return the top_k matching chunks.
+
+    Only UNCLASSIFIED documents are returned; classified material is silently
+    excluded so it never reaches the LLM context.
+    """
     if not _rag_chunks or _rag_embeddings is None:
         return []
     results = dense_retrieve(query, _rag_chunks, _rag_embeddings, embed_model, top_k)
-    return [
-        {
-            "doc_id": r.metadata.get("doc_id", ""),
-            "title": r.metadata.get("title", ""),
-            "security_clearance": r.metadata.get("security_clearance", ""),
-            "date": r.metadata.get("date", ""),
-            "chunk_id": r.metadata.get("chunk_id", ""),
-            "score": round(r.metadata.get("dense_score", 0.0), 4),
-            "text": r.text,
-        }
-        for r in results
-    ]
+    public_results = []
+    for r in results:
+        clearance = r.metadata.get("security_clearance", "").upper()
+        if clearance not in _PUBLIC_CLEARANCE_LEVELS:
+            continue
+        public_results.append(
+            {
+                "doc_id": r.metadata.get("doc_id", ""),
+                "title": r.metadata.get("title", ""),
+                "date": r.metadata.get("date", ""),
+                "chunk_id": r.metadata.get("chunk_id", ""),
+                "score": round(r.metadata.get("dense_score", 0.0), 4),
+                "text": r.text,
+            }
+        )
+    return public_results
 
 
 _APP_TOOL_REGISTRY: dict[str, dict[str, Any]] = {
